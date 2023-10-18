@@ -1,0 +1,2 @@
+# Noise levels exported from displayNoiseBS (source ImaGene): 
+# Format X Y noiseLevel 

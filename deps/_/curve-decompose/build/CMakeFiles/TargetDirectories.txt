@@ -1,0 +1,7 @@
+/home/lawbr3aker/Works/C++/UntitledX2JF8/deps/_/curve-decompose/build/CMakeFiles/curve-decompress.dir
+/home/lawbr3aker/Works/C++/UntitledX2JF8/deps/_/curve-decompose/build/CMakeFiles/edit_cache.dir
+/home/lawbr3aker/Works/C++/UntitledX2JF8/deps/_/curve-decompose/build/CMakeFiles/rebuild_cache.dir
+/home/lawbr3aker/Works/C++/UntitledX2JF8/deps/_/curve-decompose/build/CMakeFiles/list_install_components.dir
+/home/lawbr3aker/Works/C++/UntitledX2JF8/deps/_/curve-decompose/build/CMakeFiles/install.dir
+/home/lawbr3aker/Works/C++/UntitledX2JF8/deps/_/curve-decompose/build/CMakeFiles/install/local.dir
+/home/lawbr3aker/Works/C++/UntitledX2JF8/deps/_/curve-decompose/build/CMakeFiles/install/strip.dir

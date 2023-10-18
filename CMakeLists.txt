@@ -10,6 +10,7 @@ set(APPLICATION_COPYRIGHT "Copyright 2021 Dinesh Manajipet")
 set(APPLICATION_LICENSE "MIT License")
 set(APPLICATION_ICON "${CMAKE_SOURCE_DIR}/resources/icon.ico")
 set(APPLICATION_BANNER "${CMAKE_SOURCE_DIR}/resources/logo.bmp")
+set(QT_VERSION_MAJOR 5)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -42,8 +43,11 @@ endif()
 #    endif()
 #endif()
 
-find_package(QT NAMES Qt5 COMPONENTS Core Quick LinguistTools REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick LinguistTools REQUIRED)
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+include_directories(deps/include)
+
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick Widgets LinguistTools REQUIRED)
 
 set(TS_FILES translations/translation_de_DE.ts)
 
@@ -51,7 +55,8 @@ set(PROJECT_SOURCES
         src/main.cpp
         src/qml/qml.qrc
         ${TS_FILES}
-)
+        src/scripts/process.h
+        src/qml/scripts/editor.h)
 
 if(WIN32)
     configure_file(src/application.rc.in "${CMAKE_CURRENT_BINARY_DIR}/application.rc")
@@ -78,8 +83,16 @@ endif()
 
 target_compile_definitions(${PROJECT_NAME}
   PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
+file(GLOB BINARY_FILES deps/bin/lib*.*)
+file(COPY ${BINARY_FILES} DESTINATION ${CMAKE_BINARY_DIR})
 target_link_libraries(${PROJECT_NAME}
-  PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Quick)
+  PRIVATE
+        Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Quick Qt${QT_VERSION_MAJOR}::Widgets
+        ${OpenCV_LIBS}
+        ${BINARY_FILES})
+
+#file(COPY data DESTINATION ${CMAKE_BINARY_DIR})
+
 
 if(${GNULINUX})
     install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/usr/bin)
@@ -91,6 +104,12 @@ add_custom_target(OtherFiles DEPENDS ALL
                              SOURCES "README.md"
                                      "android/AndroidManifest.xml"
                                      "android/res/values/libs.xml"
+)
+
+target_sources(OtherFiles
+  PRIVATE
+    src/components/buttons/IconButton.qml
+    src/scripts/process.h
 )
 
 # Packaging
@@ -119,7 +138,7 @@ elseif(${GNULINUX})
     set(APPIMAGE_APP_NAME "${APPLICATION_NAME}")
     set(APPIMAGE_APP_EXEC "${PROJECT_NAME}")
     set(APPIMAGE_APP_ICON "${PROJECT_NAME}")
-    configure_file(resources/logo.svg "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.svg" COPYONLY)
+    configure_file(src/resources/logo.svg "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.svg" COPYONLY)
     configure_file(packaging/Application.desktop "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.desktop")
     install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.svg"
                   "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.desktop"

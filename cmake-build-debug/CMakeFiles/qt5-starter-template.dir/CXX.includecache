@@ -1,0 +1,10 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/lawbr3aker/Works/QML/FabR/cmake-build-debug/qt5-starter-template_autogen/VLDSMZLXNG/qrc_qml.cpp
+

@@ -1,0 +1,2 @@
+/usr/bin/ar qc libdxflib.a CMakeFiles/dxflib.dir/src/dl_dxf.cpp.o CMakeFiles/dxflib.dir/src/dl_writer_ascii.cpp.o
+/usr/bin/ranlib libdxflib.a

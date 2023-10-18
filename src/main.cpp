@@ -1,6 +1,11 @@
+#include <QApplication>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QStyleFactory>
 #include "version.h"
+
+#include "scripts/process.h"
+#include "scripts/editor.h"
 
 int main(int argc, char *argv[])
 {
@@ -8,11 +13,16 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
-    QGuiApplication app(argc, argv);
+
+    QApplication app(argc, argv);
+    app.setStyle(QStyleFactory::create("Fusion"));
     app.setApplicationName(QString::fromLocal8Bit(APPLICATION_NAME));
     app.setApplicationVersion(QString::fromLocal8Bit(APPLICATION_VERSION_STRING_FULL));
     app.setOrganizationName(QString::fromLocal8Bit(APPLICATION_COMPANY_NAME));
     app.setOrganizationDomain(QString::fromLocal8Bit(APPLICATION_COMPANY_DOMAIN));
+
+    qmlRegisterType<Process>("scripts", 1, 0, "Process");
+    qmlRegisterType<Editor>("scripts", 1, 0, "Editor");
 
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));
@@ -23,5 +33,5 @@ int main(int argc, char *argv[])
     }, Qt::QueuedConnection);
     engine.load(url);
 
-    return app.exec();
+    return qApp->exec();
 }

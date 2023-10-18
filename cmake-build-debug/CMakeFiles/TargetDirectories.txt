@@ -1,0 +1,9 @@
+/home/lawbr3aker/Works/QML/FabR/cmake-build-debug/CMakeFiles/qt5-starter-template.dir
+/home/lawbr3aker/Works/QML/FabR/cmake-build-debug/CMakeFiles/OtherFiles.dir
+/home/lawbr3aker/Works/QML/FabR/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/lawbr3aker/Works/QML/FabR/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/lawbr3aker/Works/QML/FabR/cmake-build-debug/CMakeFiles/list_install_components.dir
+/home/lawbr3aker/Works/QML/FabR/cmake-build-debug/CMakeFiles/install.dir
+/home/lawbr3aker/Works/QML/FabR/cmake-build-debug/CMakeFiles/install/local.dir
+/home/lawbr3aker/Works/QML/FabR/cmake-build-debug/CMakeFiles/install/strip.dir
+/home/lawbr3aker/Works/QML/FabR/cmake-build-debug/CMakeFiles/qt5-starter-template_autogen.dir

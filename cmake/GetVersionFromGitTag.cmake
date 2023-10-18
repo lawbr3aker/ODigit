@@ -32,7 +32,7 @@
 # Author: Nuno Fachada
 
 # Check if git is found...
-if (GIT_FOUND AND VERSION_FROM_GIT)
+if (GIT_FOUND AND VERSION_FROM_GIT AND FALSE)
 
     # Get last tag from git
     execute_process(COMMAND ${GIT_EXECUTABLE} describe --abbrev=0 --tags
