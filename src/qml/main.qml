@@ -3,6 +3,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls 1.3 as ControlsV1
 import QtQuick.Controls 2.15
 import QtQuick.Dialogs 1.3
+import QtQuick.Controls.Styles 1.4
 
 import "qrc:components/buttons" as Buttons
 import "qrc:components/others" as Others
@@ -11,13 +12,27 @@ import "qrc:components/views" as Views
 import "qrc:components/static/toolbar" as Toolbar
 import "qrc:components/static" as Static
 
+import scripts 1.0
+
 ControlsV1.ApplicationWindow {
     id: window
     width: 800
     height: 600
     visible: true
-    title: "%1 %2".arg(Qt.application.name)
-                    .arg(Qt.application.version)
+    title: "ODigit"
+    modality: Qt.ApplicationModal
+
+    property int direction
+
+    property var currentProcess
+
+    Config {
+        id: config
+    }
+
+    Translator {
+        id: translator
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -29,6 +44,10 @@ ControlsV1.ApplicationWindow {
             Layout.fillWidth: true
             Layout.preferredHeight: 170
 
+            Component.onCompleted: {
+                console.log(style.tabsAlignment)
+            }
+
             ControlsV1.Tab {
                 id: tabHome
                 anchors.leftMargin: 7
@@ -38,18 +57,22 @@ ControlsV1.ApplicationWindow {
 
                 title: "Home"
 
-                readonly property Item container: Item {
+                readonly property Item container: ColumnLayout {
                     parent: tabHome
                     anchors.fill: parent
 
                     readonly property Toolbar.Home toolbar: Toolbar.Home {
+                        z: 1
                         parent: tabHome.container
                         height: parent.height
+
+                        window: window
                     }
                 }
             }
 
             ControlsV1.Tab {
+                id: tabDraw
                 anchors.leftMargin: 7
                 anchors.topMargin: 7
                 anchors.rightMargin: 7
@@ -57,11 +80,15 @@ ControlsV1.ApplicationWindow {
 
                 title: "Draw"
 
-                Item {
-                    Layout.fillHeight: true
+                readonly property Item container: ColumnLayout {
+                    parent: tabDraw
+                    anchors.fill: parent
 
-                    Toolbar.Draw {
+                    readonly property Toolbar.Draw toolbar: Toolbar.Draw {
+                        parent: tabDraw.container
                         height: parent.height
+
+                        // window: window
                     }
                 }
             }
@@ -74,33 +101,39 @@ ControlsV1.ApplicationWindow {
             spacing: parent.spacing
 
             Column {
+                id: tabSide
+                z: 2
+                Layout.alignment: Qt.AlignTop
                 Layout.fillHeight: true
+                Layout.maximumHeight: 370
+                Layout.preferredWidth: 40
+
+                readonly property Item container: Item {
+                    id: ts
+                    parent: tabSide
+                    width: parent.width
+
+                    readonly property Toolbar.Side toolbar: Toolbar.Side {
+                        parent: tabSide.container
+                        anchors.fill: parent
+                        width: parent.width
+                        anchors.margins: 5
+
+                        window: window
+                    }
+                }
 
                 Rectangle {
-                    height: 150
-                    width: 40
+                    anchors.fill: parent
 
                     border.width: 1
                     border.color: '#AAAAAA'
-                    color: '#eaeaea'
-
-                    Rectangle {
-                        width: parent.width - 4
-                        height: parent.height - 4
-                        anchors.centerIn: parent
-
-                        color: 'white '
-                    }
-
-                    Toolbar.Side {
-                        x: 5
-                        y: x
-                        width: parent.width - 2 * x
-                    }
+                    color: 'white'
                 }
             }
 
             ColumnLayout {
+                z: 1
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
@@ -119,15 +152,39 @@ ControlsV1.ApplicationWindow {
                         title: '+'
                     }
 
+                    Component {
+                        id: defaultProcess
+
+                        Static.Process {
+                            title: '+'
+                        }
+                    }
+
                     onCurrentIndexChanged: {
-                        tabHome.container.toolbar.currentProcess = getTab(currentIndex)
+                        const currentTab = getTab(currentIndex)
+
+                        window.currentProcess = currentTab
+                        window.currentProcess = currentTab
+
+                        if (currentIndex == count - 1 && count) {
+                            currentTab.title = 'Untitled'
+
+                            addTab('+', defaultProcess)
+                        }
                     }
 
                     Component.onCompleted: {
-                        tabHome.container.toolbar.currentProcess = untitled
+                        const currentTab = untitled
+
+                        window.currentProcess = currentTab
+                        window.currentProcess = currentTab
                     }
                 }
             }
         }
+    }
+
+    Component.onCompleted: {
+        direction = config.global.value('/interface/appearance/direction', 'string') == 'rtl' ? Qt.RightToLeft : Qt.LeftToRight
     }
 }

@@ -18,59 +18,73 @@ ControlsV1.Tab {
     anchors.margins: 3
     anchors.fill: parent
 
-    title: 'Untitled'
-
     readonly property Scripts.Process data: Scripts.Process {
     }
 
-    Item {
+    property GridLayout container: GridLayout {
+        parent: root
         anchors.fill: parent
 
-        GridLayout {
-            anchors.fill: parent
+        columnSpacing: 0
+        rowSpacing: 0
 
-            columnSpacing: 0
-            rowSpacing: 0
+        columns: 2
+        rows: 2
 
-            columns: 2
-            rows: 2
+        Scripts.Ruler {
+            id: rulerV
+            Layout.column: 0
+            Layout.row: 1
+            Layout.fillHeight: true
+            width: 25
+            offset: editor.canvas.pan.y
 
-            Others.Ruller {
-                Layout.column: 0
-                Layout.row: 1
-                Layout.fillHeight: true
-                width: 25
-                offset: p.canvas.pan.y
-                unitPixels: 56
+            orientation: Qt.Vertical
+        }
 
-                orientation: Qt.Vertical
+        Scripts.Ruler {
+            id: rulerH
+            Layout.column: 1
+            Layout.row: 0
+            Layout.fillWidth: true
+            height: 25
+            offset: editor.canvas.pan.x
+
+            orientation: Qt.Horizontal
+        }
+
+        Timer {
+            id: fps
+            interval: 16
+            running: true
+            repeat: true
+            onTriggered: {
+                rulerH.update()
+                rulerV.update()
+            }
+        }
+
+        Views.PolygonEditor {
+            id: editor
+            parent: container
+
+            Layout.column: 1
+            Layout.row: 1
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            visible: true
+
+            Component.onCompleted: {
+                root.data.editor = editor.canvas
             }
 
-            Others.Ruller {
-                Layout.column: 1
-                Layout.row: 0
-                Layout.fillWidth: true
-                height: 25
-                offset: p.canvas.pan.x
-                unitPixels: 56
-
-                orientation: Qt.Horizontal
-            }
-
-            Views.PolygonEditor {
-                id: p
-
-                Layout.column: 1
-                Layout.row: 1
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-                visible: true
-
-                Component.onCompleted: {
-                    console.log(p.canvas.points)
-                    root.data.editor = p.canvas
-                }
+            canvas.onZoomChanged: {
+                const pixels = root.data.config.value('/cm_pixels', 'int')
+                rulerV.unitPixels = canvas.zoom * pixels
+                rulerH.unitPixels = canvas.zoom * pixels
             }
         }
     }
+
+    property alias editor: editor
 }

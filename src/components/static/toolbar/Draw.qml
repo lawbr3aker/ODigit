@@ -15,7 +15,7 @@ RowLayout {
                 Layout.preferredWidth: 65
 
                 icon.source: 'qrc:assets/icons/move'
-                text.text: "Move"
+                title.text: translator.global.tr('R3aX')
             }
 
             Buttons.IconButton {
@@ -23,7 +23,7 @@ RowLayout {
                 Layout.preferredWidth: 55
 
                 icon.source: 'qrc:assets/icons/eraser'
-                text.text: "Erase"
+                title.text: translator.global.tr('L1fW')
             }
         }
 
@@ -31,7 +31,7 @@ RowLayout {
             Layout.alignment: Qt.AlignBottom
             Layout.preferredWidth: parent.width
 
-            text: 'Utility'
+            text: translator.global.tr('S7gX')
             horizontalAlignment: Text.AlignHCenter
         }
     }

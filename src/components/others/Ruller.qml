@@ -5,7 +5,7 @@ Canvas {
     id: root
 
     required property int orientation
-    property int unitPixels: 30
+    property int unitPixels: 56
     property int offset: 0
 
     readonly property alias background: background
@@ -93,7 +93,7 @@ Canvas {
 
     Timer {
         id: fps
-        interval: 30
+        interval: 200
         running: false
         repeat: true
         onTriggered: {
@@ -102,6 +102,6 @@ Canvas {
     }
 
     Component.onCompleted: {
-        fps.running = true
+        // fps.running = true
     }
 }

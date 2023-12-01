@@ -1,6 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>About.qml</file>
+        <file>Settings.qml</file>
         <file>qtquickcontrols2.conf</file>
     </qresource>
     <qresource prefix="/assets/icons">
@@ -15,9 +17,25 @@
         <file alias="about">resources/icons/about.png</file>
         <file alias="render">resources/icons/render.png</file>
         <file alias="setting">resources/icons/setting.png</file>
+        <file alias="zoom-in">resources/icons/zoom-in.png</file>
+        <file alias="zoom-out">resources/icons/zoom-out.png</file>
+        <file alias="measure">resources/icons/measure.png</file>
+        <file alias="text">resources/icons/text.png</file>
+        <file alias="dxf">resources/icons/dxf.png</file>
+        <file alias="home">resources/icons/home.png</file>
+    </qresource>
+    <qresource prefix="/assets">
+        <file alias="logo">resources/logo.png</file>
     </qresource>
     <qresource prefix="/components/buttons">
         <file alias="IconButton.qml">components/buttons/IconButton.qml</file>
+    </qresource>
+    <qresource prefix="/components/inputs">
+        <file alias="Input.qml">components/inputs/Input.qml</file>
+        <file alias="Choice.qml">components/inputs/Choice.qml</file>
+        <file alias="SpinBox.qml">components/inputs/SpinBox.qml</file>
+        <file alias="Slider.qml">components/inputs/Slider.qml</file>
+        <file alias="Button.qml">components/inputs/Button.qml</file>
     </qresource>
     <qresource prefix="/components/static/toolbar">
         <file alias="Home.qml">components/static/toolbar/Home.qml</file>
@@ -28,7 +46,6 @@
         <file alias="Ruller.qml">components/others/Ruller.qml</file>
     </qresource>
     <qresource prefix="/components/views">
-        <file>components/views/CustomCanvas.qml</file>
         <file alias="PolygonEditor.qml">components/views/PolygonEditor.qml</file>
     </qresource>
     <qresource prefix="/core">
@@ -36,5 +53,13 @@
     </qresource>
     <qresource prefix="/components/static">
         <file alias="Process.qml">components/static/Process.qml</file>
+        <file alias="AddText.qml">components/static/AddText.qml</file>
+    </qresource>
+    <qresource prefix="/assets/fonts">
+        <file alias="Peyda-Bold">resources/fonts/Peyda-Bold.ttf</file>
+    </qresource>
+    <qresource prefix="/translations">
+        <file alias="fa">translations/tr_fa.json</file>
+        <file alias="en">translations/tr_en.json</file>
     </qresource>
 </RCC>

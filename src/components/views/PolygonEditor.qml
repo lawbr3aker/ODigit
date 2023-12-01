@@ -7,39 +7,18 @@ import scripts 1.0 as Scripts
 Item {
     id: root
 
-    property var points  : []
-    property var segments: []
-
-    property var selectedPoints  : []
-    property var selectedSegments: []
-
     property alias canvas: canvas
-
-    function addPoint(x, y) {
-        const point = Qt.point(x, y)
-        points.push(point)
-
-        return point
-    }
-
-    function addSegment(s, e) {
-        const segment = { s: s, e: e }
-        segments.push(segment)
-
-        return segment
-    }
+    property alias input: input
 
     Scripts.Editor {
         id: canvas
-        z: 0
-//
         anchors.fill: parent
-//
-//        readonly property int lineThickness: 4
-//        readonly property int pointRadius  : 5
-//
-//        property double zoom: 1
-        property point  pan : Qt.point(0, 0)
+
+        property var callbacks: []
+
+        Component.onCompleted: {
+            zoom = 1
+        }
 
         Rectangle {
             z: -1
@@ -48,189 +27,255 @@ Item {
             color: 'white'
         }
 
-//        function drawGrid(ctx) {
-//        }
-//
-//        function drawPoints(ctx, points, color) {
-//            ctx.beginPath()
-//            for (const point of points) {
-//                ctx.ellipse(point.x * zoom - pointRadius + pan.x, point.y * zoom - pointRadius + pan.y, pointRadius * 2, pointRadius * 2)
-//            }
-//            ctx.fillStyle = color
-//            ctx.fill()
-//        }
-//
-//        function drawSegments(ctx, segments, color) {
-//            ctx.beginPath()
-//            for (const segment of segments) {
-//                if (!segment.s) {
-//                    continue
-//                }
-//
-//                ctx.moveTo(segment.s.x * zoom + pan.x, segment.s.y * zoom + pan.y);
-//                ctx.lineTo(segment.e.x * zoom + pan.x, segment.e.y * zoom + pan.y);
-//            }
-//            ctx.lineWidth = lineThickness
-//            ctx.strokeStyle = color
-//            ctx.stroke()
-//        }
-//
-//        onPaint: {
-//            const ctx = getContext('2d')
-//            ctx.reset()
-//            //
-//            drawSegments(ctx, segments, '#6060FF')
-//
-//
-//            //
-//            drawPoints(ctx, points        , '#0006FF')
-//            drawPoints(ctx, selectedPoints, '#FF0300')
-//            if (input.hoveredPoint)
-//                drawPoints(ctx, [input.hoveredPoint], '#880106')
-//        }
+        Canvas {
+            anchors.fill: parent
+
+            onPaint: {
+                const ctx = getContext('2d')
+
+                ctx.clearRect(0, 0, context.canvas.width, context.canvas.height)
+
+                const deleteCallbacks = []
+                for (const callback of canvas.callbacks) {
+                    if (callback(ctx, canvas.pan.x, canvas.pan.y, canvas.zoom) !== true)
+                        deleteCallbacks.push(callback)
+                }
+
+                if (deleteCallbacks.length)
+                    canvas.callbacks = canvas.callbacks.filter(c => !deleteCallbacks.includes(c))
+            }
+
+            Timer {
+                id: fps
+                interval: 20
+                repeat: true
+
+                onTriggered: {
+                    parent.requestPaint()
+                }
+            }
+
+            Component.onCompleted: {
+                fps.running = true
+            }
+        }
+    }
+
+    MouseArea {
+        id: input
+
+        anchors.fill: parent
+
+        readonly property int cursorDefault: Qt.CrossCursor
+        readonly property int cursorHover  : Qt.OpenHandCursor
+
+        property int  mouseCurrentX: -1
+        property int  mouseCurrentY: -1
+        property int  mouseLastX: -1
+        property int  mouseLastY: -1
+        property bool mouseButtonLeft: false
+        property bool mouseButtonMiddle: false
+
+        property var callbacks: []
+
+        property var hoveredPoint  : null
+        property var hoveredSegment: null
+
+        property var activePoints: []
+
+        property var keys: {}
+
+        cursorShape: cursorDefault
+        hoverEnabled: true
+        focus: true
+
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+
+        onPositionChanged: {
+            forceActiveFocus()
+            mouseCurrentX = mouseX
+            mouseCurrentY = mouseY
+
+            let hovered
+            for (const point of canvas.points) {
+                const x = point.x * canvas.zoom + canvas.pan.x
+                const y = point.y * canvas.zoom + canvas.pan.y
+
+                if (x - 8 <= mouseCurrentX && mouseCurrentX <= x + 8
+                 && y - 8 <= mouseCurrentY && mouseCurrentY <= y + 8) {
+                    hovered = point
+                }
+            }
+
+            if ((!hovered || hovered === hoveredPoint) && hoveredPoint) {
+                if (!keys[Qt.LeftButton]) {
+                    if (hoveredPoint.status === 'hover')
+                        hoveredPoint.status = 'default'
+                    hoveredPoint = undefined
+                    //
+                    cursorShape = cursorDefault
+                    canvas.update()
+                }
+            }
+            if (hovered) {
+                hoveredPoint = hovered
+                if (hoveredPoint.status === 'default')
+                    hoveredPoint.status = 'hover'
+                //
+                cursorShape = cursorHover
+                canvas.update()
+            }
+
+            if (keys[Qt.MiddleButton]) {
+                let deltaX = mouseCurrentX - mouseLastX,
+                    deltaY = mouseCurrentY - mouseLastY
+
+                canvas.pan.x += deltaX
+                canvas.pan.y += deltaY
+                canvas.update()
+            } else
+            if (keys[Qt.LeftButton] && activePoints.length > 0) {
+                let deltaX = mouseCurrentX - mouseLastX,
+                    deltaY = mouseCurrentY - mouseLastY
+
+                for (const point of activePoints) {
+                    point.x += deltaX / canvas.zoom
+                    point.y += deltaY / canvas.zoom
+                }
+                canvas.update()
+            }
+
+            mouseLastX = mouseCurrentX
+            mouseLastY = mouseCurrentY
+        }
+
+        onPressed: {
+            keys[mouse.button] = true
+
+            onKeysChanged(mouse.button, true)
+        }
+
+        onReleased: {
+            delete keys[mouse.button]
+
+            onKeysChanged(mouse.button, false)
+        }
+
+        Keys.onPressed: {
+            keys[event.key] = true
+
+            onKeysChanged(event.key, true)
+        }
+
+        Keys.onReleased: {
+            delete keys[event.key]
+
+            onKeysChanged(event.key, false)
+        }
+
+        function onKeysChanged(key, active) {
+            const deleteCallbacks = []
+            for (const callback of input.callbacks) {
+                if (callback(key, active) !== true)
+                    deleteCallbacks.push(callback)
+            }
+
+            if (deleteCallbacks.length)
+                input.callbacks = input.callbacks.filter(callback => !deleteCallbacks.includes(callback))
+
+
+            if (active) {
+                switch (key) {
+                    case Qt.Key_Delete: {
+                        for (const point of input.activePoints) {
+                            for (const line of canvas.lines)
+                                if (line.s === point || line.e === point)
+                                    canvas.removeLine(line)
+
+                            canvas.removePoint(point)
+                        }
+                        canvas.update()
+                    } break
+                    case Qt.LeftButton: {
+                        if (hoveredPoint) {
+                            if (hoveredPoint.status !== 'active') {
+                                hoveredPoint.status = 'active'
+
+                                if (keys[Qt.Key_Shift]) {
+                                    activePoints.push(hoveredPoint)
+                                } else {
+                                    for (const point of activePoints)
+                                        point.status = 'default'
+
+                                    activePoints = [hoveredPoint]
+                                }
+                            } else {
+                                if (keys[Qt.Key_Shift]) {
+                                    hoveredPoint.status = 'default'
+
+                                    activePoints.splice(activePoints.indexOf(hoveredPoint), 1)
+                                }
+                            }
+                        }
+                    } break
+                }
+                switch (key) {
+                    case Qt.LeftButton:
+                    case Qt.MiddleButton:
+                    case Qt.RightButton: {
+                        if (!hoveredPoint && activePoints.length) {
+                            for (const point of activePoints)
+                                point.status = 'default'
+
+                            canvas.update()
+
+                            activePoints = []
+                        }
+                    }
+                }
+            }
+        }
 
         Timer {
-            id: canvasTimer
-
+            id: checkCallbacks
             repeat: true
-            interval: 1000 / 100
-
+            interval: 100
+            running: true
             onTriggered: {
-                canvas.width = canvas.width - 0.0001;
+                const deleteCallbacks = []
+                for (const callback of input.callbacks) {
+                    if (callback() !== true)
+                        deleteCallbacks.push(callback)
+                }
+
+                if (deleteCallbacks.length)
+                    input.callbacks = input.callbacks.filter(callback => !deleteCallbacks.includes(callback))
+            }
+        }
+
+        WheelHandler {
+            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+            orientation: Qt.Vertical
+            property: "y"
+
+            onWheel: (wheel) => {
+                let mx0 = (input.mouseX - canvas.pan.x) / canvas.zoom
+                let my0 = (input.mouseY - canvas.pan.y) / canvas.zoom
+
+                canvas.zoom *= 1 + (wheel.angleDelta.y / 120 / 10)
+
+                mx0 = canvas.pan.x + (mx0 * canvas.zoom)
+                my0 = canvas.pan.y + (my0 * canvas.zoom)
+
+                canvas.pan.x += input.mouseX - mx0
+                canvas.pan.y += input.mouseY - my0
+                //
+                canvas.update()
             }
         }
 
         Component.onCompleted: {
-            canvasTimer.running = true
+            keys = {}
         }
     }
-
-//    MouseArea {
-//        id: input
-//
-//        anchors.fill: parent
-//
-//        readonly property int cursorDefault: Qt.CrossCursor
-//        readonly property int cursorHover  : Qt.OpenHandCursor
-//
-//        property int mouseCurrentX: -1
-//        property int mouseCurrentY: -1
-//        property int mouseLastX: -1
-//        property int mouseLastY: -1
-//
-//        property var hoveredPoint  : null
-//        property var hoveredSegment: null
-//
-//        property var keys: []
-//
-//        cursorShape: cursorDefault
-//        hoverEnabled: true
-//
-//        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
-//
-//        onPositionChanged: {
-//            if (!focus) {
-//                forceActiveFocus()
-//                focus = true
-//            }
-//            mouseCurrentX = mouseX / canvas.zoom + canvas.pan.x
-//            mouseCurrentY = mouseY / canvas.zoom + canvas.pan.y
-//
-//            if (input.isPressed(Qt.LeftButton)) {
-//                let deltaX = mouseCurrentX - mouseLastX,
-//                    deltaY = mouseCurrentY - mouseLastY
-//
-//                for (const point of root.selectedPoints) {
-//                    point.x += deltaX
-//                    point.y += deltaY
-//                }
-//            } else {
-//                hoveredPoint = undefined
-//                for (const point of root.points) {
-//                    if ((point.x - canvas.pointRadius -4 <= mouseCurrentX && mouseCurrentX <= point.x + canvas.pointRadius +4)
-//                     && (point.y - canvas.pointRadius -4 <= mouseCurrentY && mouseCurrentY <= point.y + canvas.pointRadius +4)) {
-//                        hoveredPoint = point
-//                        break
-//                    }
-//                }
-//
-//                if (hoveredPoint) {
-//                    cursorShape = cursorHover
-//                    //
-//                    return
-//                }
-//
-//                let hoveredSegment
-//
-//                cursorShape = cursorDefault
-//            }
-//
-//            if (input.isPressed(Qt.MiddleButton) && input.isPressed(Qt.Key_Shift)) {
-//                let deltaX = mouseCurrentX - mouseLastX,
-//                    deltaY = mouseCurrentY - mouseLastY
-//
-//                canvas.pan.x += deltaX * canvas.scale / 2
-//                canvas.pan.y += deltaY * canvas.scale / 2
-//            }
-//
-//            mouseLastX = mouseCurrentX
-//            mouseLastY = mouseCurrentY
-//        }
-//
-//        onPressed: {
-//            input.addKey(mouse.button)
-//
-//            if (input.isPressed(Qt.LeftButton)) {
-//                root.selectedPoints = []
-//                if (hoveredPoint) {
-//                    root.selectedPoints.push(hoveredPoint)
-//                } else {
-//                    root.addSegment(root.points[root.points.length - 1], root.addPoint(mouseCurrentX, mouseCurrentY))
-//                }
-//            }
-//        }
-//        onReleased: {
-//            input.removeKey(mouse.button)
-//        }
-//
-//        WheelHandler {
-//            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-//            orientation: Qt.Vertical
-//            property: "y"
-//
-//            onWheel: (wheel) => {
-//                if (input.isPressed(Qt.Key_Shift)) {
-//                    const tX = input.mouseX * canvas.zoom
-//                    const tY = input.mouseY * canvas.zoom
-//                    canvas.zoom *= 1 + (wheel.angleDelta.y / 120 / 10)
-//                    canvas.pan.x += (tX - input.mouseX * canvas.zoom)
-//                    canvas.pan.y += (tY - input.mouseY * canvas.zoom)
-//                }
-//            }
-//        }
-//
-//        onFocusChanged: if (!focus) forceActiveFocus()
-//        Component.onCompleted: {
-//            forceActiveFocus()
-//        }
-//
-//        function addKey(key) {
-//            keys.push(key)
-//        }
-//
-//        function removeKey(key) {
-//            keys.splice(keys.indexOf(key), 1)
-//        }
-//
-//        function isPressed(key) {
-//            return keys.indexOf(key) !== -1
-//        }
-//
-//        Keys.onPressed: (event) => {
-//            input.addKey(event.key)
-//        }
-//        Keys.onReleased: (event) => {
-//            input.removeKey(event.key)
-//        }
-//    }
 }

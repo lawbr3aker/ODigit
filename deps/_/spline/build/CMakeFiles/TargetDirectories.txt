@@ -1,3 +1,0 @@
-/home/lawbr3aker/Works/C++/UntitledX2JF8/deps/_/spline/build/CMakeFiles/spline.dir
-/home/lawbr3aker/Works/C++/UntitledX2JF8/deps/_/spline/build/CMakeFiles/edit_cache.dir
-/home/lawbr3aker/Works/C++/UntitledX2JF8/deps/_/spline/build/CMakeFiles/rebuild_cache.dir

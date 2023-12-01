@@ -1,3 +1,0 @@
-/home/lawbr3aker/Works/C++/UntitledX2JF8/deps/_/dxflib-2.5/build/CMakeFiles/dxflib.dir
-/home/lawbr3aker/Works/C++/UntitledX2JF8/deps/_/dxflib-2.5/build/CMakeFiles/edit_cache.dir
-/home/lawbr3aker/Works/C++/UntitledX2JF8/deps/_/dxflib-2.5/build/CMakeFiles/rebuild_cache.dir

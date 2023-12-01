@@ -72,3 +72,12 @@ Thumbs.db
 *.exe
 *.user
 build*/*
+
+# Dependencies
+deps/*
+
+# JetBrains
+cmake-build-*
+
+# Etc
+test*/*

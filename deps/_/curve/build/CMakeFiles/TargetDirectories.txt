@@ -1,3 +1,0 @@
-/home/lawbr3aker/Works/C++/UntitledX2JF8/deps/_/curve/build/CMakeFiles/curve.dir
-/home/lawbr3aker/Works/C++/UntitledX2JF8/deps/_/curve/build/CMakeFiles/edit_cache.dir
-/home/lawbr3aker/Works/C++/UntitledX2JF8/deps/_/curve/build/CMakeFiles/rebuild_cache.dir

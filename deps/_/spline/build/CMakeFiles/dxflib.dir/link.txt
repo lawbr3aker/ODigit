@@ -1,2 +1,0 @@
-/usr/bin/ar qc libdxflib.a CMakeFiles/dxflib.dir/src/main/cpp/BSpline.cpp.o CMakeFiles/dxflib.dir/src/main/cpp/Bezier.cpp.o CMakeFiles/dxflib.dir/src/main/cpp/CatmullRom.cpp.o CMakeFiles/dxflib.dir/src/main/cpp/Curve.cpp.o CMakeFiles/dxflib.dir/src/main/cpp/Vector.cpp.o
-/usr/bin/ranlib libdxflib.a
