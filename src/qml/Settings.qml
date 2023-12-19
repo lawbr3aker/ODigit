@@ -46,7 +46,7 @@ ControlsV1.ApplicationWindow {
         onYes: {
             tabs.inputsSave()
             window.close()
-            Qt.callLater(Qt.quit)
+            currentProcess.data.restartProgram()
         }
         onNo: {
             close()
@@ -382,40 +382,40 @@ ControlsV1.ApplicationWindow {
             }
 
             function inputsLoad() {
-                interfaceLanguage .input.currentIndex = interfaceLanguage.input.model.findIndex(x => x.value === config.global.value('/interface/language', 'string'))
-                interfaceAppearanceStyle.input.currentIndex = interfaceAppearanceStyle.input.model.findIndex(x => x.value === config.global.value('/interface/appearance/style', 'string'))
-                mainPlaneWidth    .input.value = config.global.value('/plane_width', 'double')
-                mainPlaneHeight   .input.value = config.global.value('/plane_height', 'double')
-                mainCMPixels      .input.value = config.global.value('/cm_pixels', 'int')
-                detectorThreshold1.input.value = config.global.value('/scanner/threshold_1', 'int')
-                detectorThreshold2.input.value = config.global.value('/scanner/threshold_2', 'int')
-                detectorEDSize    .input.value = config.global.value('/scanner/fixer/erode_dilate_size', 'int')
-                stabilizerBlurSize.input.value = config.global.value('/scanner/blur_size', 'int')
-                fixerThreshold    .input.value = config.global.value('/scanner/fixer/threshold', 'int')
-                fixerMinLineLength.input.value = config.global.value('/scanner/fixer/min_line_length', 'int')
-                fixerMaxLineGap   .input.value = config.global.value('/scanner/fixer/max_line_gap', 'int')
-                fixerMinArea      .input.value = config.global.value('/scanner/fixer/min_area', 'int')
-                fixerEpsilon      .input.value = config.global.value('/scanner/fixer/epsilon', 'double')
+                interfaceLanguage .input.currentIndex = interfaceLanguage.input.model.findIndex(x => x.value === config.global.value('interface/language', 'string'))
+                interfaceAppearanceStyle.input.currentIndex = interfaceAppearanceStyle.input.model.findIndex(x => x.value === config.global.value('interface/appearance/style', 'string'))
+                mainPlaneWidth    .input.value = config.global.value('plane_width', 'double')
+                mainPlaneHeight   .input.value = config.global.value('plane_height', 'double')
+                mainCMPixels      .input.value = config.global.value('cm_pixels', 'int')
+                detectorThreshold1.input.value = config.global.value('scanner/threshold_1', 'int')
+                detectorThreshold2.input.value = config.global.value('scanner/threshold_2', 'int')
+                detectorEDSize    .input.value = config.global.value('scanner/fixer/erode_dilate_size', 'int')
+                stabilizerBlurSize.input.value = config.global.value('scanner/blur_size', 'int')
+                fixerThreshold    .input.value = config.global.value('scanner/fixer/threshold', 'int')
+                fixerMinLineLength.input.value = config.global.value('scanner/fixer/min_line_length', 'int')
+                fixerMaxLineGap   .input.value = config.global.value('scanner/fixer/max_line_gap', 'int')
+                fixerMinArea      .input.value = config.global.value('scanner/fixer/min_area', 'int')
+                fixerEpsilon      .input.value = config.global.value('scanner/fixer/epsilon', 'double')
             }
 
             function inputsSave() {
                 const language = interfaceLanguage.input.model[interfaceLanguage.input.currentIndex].value
-                config.global.set('/interface/language', language, 'string')
-                config.global.set('/interface/appearance/style', interfaceAppearanceStyle.input.model[interfaceAppearanceStyle.input.currentIndex].value, 'string')
-                config.global.set('/interface/appearance/direction', language === 'fa' ? 'rtl' : 'ltr', 'string')
-                config.global.set('/plane_width', mainPlaneWidth.input.value, 'double')
-                config.global.set('/plane_height', mainPlaneHeight.input.value, 'double')
-                config.global.set('/cm_pixels', mainCMPixels.input.value, 'int')
-                config.global.set('/scanner/threshold_1', detectorThreshold1.input.value, 'int')
-                config.global.set('/scanner/threshold_1', detectorThreshold1.input.value, 'int')
-                config.global.set('/scanner/threshold_2', detectorThreshold2.input.value, 'int')
-                config.global.set('/scanner/fixer/erode_dilate_size', detectorEDSize    .input.value, 'int')
-                config.global.set('/scanner/blur_size', stabilizerBlurSize .input.value, 'int')
-                config.global.set('/scanner/fixer/threshold', fixerThreshold    .input.value, 'int')
-                config.global.set('/scanner/fixer/min_line_length', fixerMinLineLength.input.value, 'int')
-                config.global.set('/scanner/fixer/max_line_gap', fixerMaxLineGap   .input.value, 'int')
-                config.global.set('/scanner/fixer/min_area', fixerMinArea      .input.value, 'int')
-                config.global.set('/scanner/fixer/epsilon', fixerEpsilon      .input.value, 'double')
+                config.global.set('interface/language', language, 'string')
+                config.global.set('interface/appearance/style', interfaceAppearanceStyle.input.model[interfaceAppearanceStyle.input.currentIndex].value, 'string')
+                config.global.set('interface/appearance/direction', language === 'fa' ? 'rtl' : 'ltr', 'string')
+                config.global.set('plane_width', mainPlaneWidth.input.value, 'double')
+                config.global.set('plane_height', mainPlaneHeight.input.value, 'double')
+                config.global.set('cm_pixels', mainCMPixels.input.value, 'int')
+                config.global.set('scanner/threshold_1', detectorThreshold1.input.value, 'int')
+                config.global.set('scanner/threshold_1', detectorThreshold1.input.value, 'int')
+                config.global.set('scanner/threshold_2', detectorThreshold2.input.value, 'int')
+                config.global.set('scanner/fixer/erode_dilate_size', detectorEDSize    .input.value, 'int')
+                config.global.set('scanner/blur_size', stabilizerBlurSize .input.value, 'int')
+                config.global.set('scanner/fixer/threshold', fixerThreshold    .input.value, 'int')
+                config.global.set('scanner/fixer/min_line_length', fixerMinLineLength.input.value, 'int')
+                config.global.set('scanner/fixer/max_line_gap', fixerMaxLineGap   .input.value, 'int')
+                config.global.set('scanner/fixer/min_area', fixerMinArea      .input.value, 'int')
+                config.global.set('scanner/fixer/epsilon', fixerEpsilon      .input.value, 'double')
                 config.global.save()
             }
 
@@ -469,6 +469,6 @@ ControlsV1.ApplicationWindow {
     }
 
     Component.onCompleted: {
-        direction = config.global.value('/interface/appearance/direction', 'string') == 'rtl' ? Qt.RightToLeft : Qt.LeftToRight
+        direction = config.global.value('interface/appearance/direction', 'string') == 'rtl' ? Qt.RightToLeft : Qt.LeftToRight
     }
 }

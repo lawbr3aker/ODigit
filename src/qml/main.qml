@@ -44,10 +44,6 @@ ControlsV1.ApplicationWindow {
             Layout.fillWidth: true
             Layout.preferredHeight: 170
 
-            Component.onCompleted: {
-                console.log(style.tabsAlignment)
-            }
-
             ControlsV1.Tab {
                 id: tabHome
                 anchors.leftMargin: 7
@@ -100,13 +96,14 @@ ControlsV1.ApplicationWindow {
 
             spacing: parent.spacing
 
-            Column {
+            ColumnLayout {
                 id: tabSide
                 z: 2
                 Layout.alignment: Qt.AlignTop
                 Layout.fillHeight: true
                 Layout.maximumHeight: 370
-                Layout.preferredWidth: 40
+                Layout.minimumWidth: 40
+                Layout.maximumWidth: 40
 
                 readonly property Item container: Item {
                     id: ts
@@ -124,7 +121,8 @@ ControlsV1.ApplicationWindow {
                 }
 
                 Rectangle {
-                    anchors.fill: parent
+                    width: parent.width
+                    height: parent.height
 
                     border.width: 1
                     border.color: '#AAAAAA'
@@ -185,6 +183,6 @@ ControlsV1.ApplicationWindow {
     }
 
     Component.onCompleted: {
-        direction = config.global.value('/interface/appearance/direction', 'string') == 'rtl' ? Qt.RightToLeft : Qt.LeftToRight
+        direction = config.global.value('interface/appearance/direction', 'string') == 'rtl' ? Qt.RightToLeft : Qt.LeftToRight
     }
 }

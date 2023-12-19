@@ -101,6 +101,36 @@ RowLayout {
                 }
             }
 
+            Static.Compressor {
+                id: compressor
+
+                onVisibleChanged: {
+                    parent = window.currentProcess
+                    x = 40
+                    y = 40
+                }
+
+                after:
+                    function() {
+                        window.currentProcess.data.process(parseFloat(compressor.value.text))
+                        window.currentProcess.data.editor.update()
+                    }
+            }
+
+            Buttons.IconButton {
+                id: compress
+
+                Layout.fillHeight: true
+                Layout.preferredWidth: 75
+
+                icon.source: 'qrc:assets/icons/compress'
+                title.text: translator.global.tr('DSe1')
+
+                onClicked: {
+                    compressor.open()
+                }
+            }
+
             Buttons.IconButton {
                 id: exportDXF
 
@@ -112,20 +142,6 @@ RowLayout {
 
                 onClicked: {
                     window.currentProcess.data.exportDXF()
-                }
-            }
-
-            Buttons.IconButton {
-                id: exportPDF
-
-                Layout.fillHeight: true
-                Layout.preferredWidth: 65
-
-//                icon.source: 'qrc:assets/icons/render'
-                title.text: translator.global.tr('J9iZ')
-
-                onClicked: {
-                    window.currentProcess.data.exportPDF()
                 }
             }
         }
@@ -168,7 +184,6 @@ RowLayout {
                 onClicked: {
                     settings.show()
                 }
-
             }
 
             Buttons.IconButton {

@@ -79,7 +79,7 @@ ControlsV1.Tab {
             }
 
             canvas.onZoomChanged: {
-                const pixels = root.data.config.value('/cm_pixels', 'int')
+                const pixels = root.data.config.value('cm_pixels', 'int')
                 rulerV.unitPixels = canvas.zoom * pixels
                 rulerH.unitPixels = canvas.zoom * pixels
             }

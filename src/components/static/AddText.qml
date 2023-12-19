@@ -31,7 +31,7 @@ Popup {
     property var after
 
     background: Item {
-        anchors.fill: root
+        anchors.fill: parent
 
         Rectangle {
             id: background

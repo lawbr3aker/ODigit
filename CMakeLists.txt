@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(qt5-starter-template LANGUAGES CXX)
+project(ODigit LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+set(APPLICATION_TEST "name")
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -30,7 +32,7 @@ set(PROJECT_TRANSLATIONS
 )
 
 add_executable(${PROJECT_NAME}
-#    WIN32
+    #WIN32
     ${PROJECT_SOURCES}
 )
 

@@ -81,3 +81,8 @@ cmake-build-*
 
 # Etc
 test*/*
+docker*/*
+.github/*
+
+# Fonts
+*.ttf

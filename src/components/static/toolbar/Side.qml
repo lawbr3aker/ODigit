@@ -247,7 +247,7 @@ ColumnLayout {
                             if (distance.angle === undefined) {
                                 distance.angle   = Math.atan((callback.e.y - callback.s.y) / (callback.e.x - callback.s.x))
                                 distance.value   = Math.sqrt(Math.pow(callback.e.y - callback.s.y, 2) + Math.pow(callback.e.x - callback.s.x, 2))
-                                distance.text    = `${(distance.value / window.currentProcess.data.config.value('/cm_pixels', 'int')).toFixed(2)}CM`
+                                distance.text    = `${(distance.value / window.currentProcess.data.config.value('cm_pixels', 'int')).toFixed(2)}CM`
                                 distance.metrics = ctx.measureText(distance.text)
                                 distance.point   = {
                                     x: (callback.s.x + callback.e.x) / 2 - distance.metrics.width,
@@ -320,7 +320,6 @@ ColumnLayout {
                 delete callback.s
                 callback.alive = false
                 callback.active = false
-                console.log(callback.s, callback.alive, callback.active)
             }
         }
 

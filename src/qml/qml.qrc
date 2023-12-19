@@ -3,7 +3,8 @@
         <file>main.qml</file>
         <file>About.qml</file>
         <file>Settings.qml</file>
-        <file>qtquickcontrols2.conf</file>
+        <file alias="icon.ico">resources/icon.ico</file>
+        <file alias="config">resources/config.json</file>
     </qresource>
     <qresource prefix="/assets/icons">
         <file alias="open-file">resources/icons/open-file.png</file>
@@ -23,6 +24,7 @@
         <file alias="text">resources/icons/text.png</file>
         <file alias="dxf">resources/icons/dxf.png</file>
         <file alias="home">resources/icons/home.png</file>
+        <file alias="compress">resources/icons/compress.png</file>
     </qresource>
     <qresource prefix="/assets">
         <file alias="logo">resources/logo.png</file>
@@ -54,9 +56,13 @@
     <qresource prefix="/components/static">
         <file alias="Process.qml">components/static/Process.qml</file>
         <file alias="AddText.qml">components/static/AddText.qml</file>
+        <file alias="Compressor.qml">components/static/Compressor.qml</file>
     </qresource>
     <qresource prefix="/assets/fonts">
         <file alias="Peyda-Bold">resources/fonts/Peyda-Bold.ttf</file>
+    </qresource>
+    <qresource prefix="/assets/images">
+        <file alias="banner">resources/banner.png</file>
     </qresource>
     <qresource prefix="/translations">
         <file alias="fa">translations/tr_fa.json</file>

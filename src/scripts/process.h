@@ -7,7 +7,8 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QTextCodec>
-
+#include <QApplication>
+#include <QProcess>
 
 #include <utility>
 #include <numeric>
@@ -21,6 +22,7 @@
 #include <dxflib/dl_dxf.h>
 
 #include "config.h"
+#include <windows.h>
 
 extern int main(int argc, char *argv[]);
 
@@ -84,21 +86,26 @@ public:
 
     Q_INVOKABLE void readPath() {
         auto const& path = QFileDialog::getOpenFileName(nullptr, QObject::tr("Open image"), nullptr, QObject::tr("Image File (*.png, *.jpg)"));
+        if (path.length() == 0)
+            return;
 
         openFile(path);
     }
 
     Q_INVOKABLE void openFile(QString const& path) {
-        cv::Mat input = cv::imread(path.toStdString(), cv::IMREAD_COLOR);
+        QFile file(path);
+        file.open(QIODevice::ReadOnly);
+        cv::Mat dst;
+        QByteArray data = file.readAll();
+        cv::Mat input = cv::imdecode(cv::Mat(data.size(), 1, CV_8U, data.data()), cv::IMREAD_COLOR);
 
         cv::aruco::DetectorParameters detector_parameters = cv::aruco::DetectorParameters();
         cv::aruco::Dictionary         detector_dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
         //
         cv::aruco::ArucoDetector detector(detector_dictionary, detector_parameters);
-
         cv::Size2f const
-            plane_size((float) Config::global->data["/plane_width"_json_pointer],
-                       (float) Config::global->data["/plane_height"_json_pointer]);
+            plane_size(Config::global->value("plane_width").value<float>(),
+                       Config::global->value("plane_height").value<float>());
         std::vector<cv::Point2f>
             plane_corners(4);
         //
@@ -158,7 +165,7 @@ public:
 
         loaded = true;
 
-        auto const pixels = (float) Config::global->data["/cm_pixels"_json_pointer];
+        auto const pixels = Config::global->value("cm_pixels").value<float>();
         cv::Size2f const
             plane_size_warped(
                 plane_size.width * pixels,
@@ -187,18 +194,32 @@ public:
         cv::threshold(*_image, *_image, 100, 255, cv::THRESH_BINARY);
     }
 
-    Q_INVOKABLE void process() {
-        cv::GaussianBlur(*_image, *_image,
+    Q_INVOKABLE void process(float compress=1) {
+        auto image = _image->clone();
+        if (compress != 1) {
+            auto size = cv::Size2f (image.cols, image.rows);
+            size.width *= compress;
+            size.height *= compress;
+            cv::resize(image, image, size);
+        }
+
+        qDeleteAll(_editor->points.begin(), _editor->points.end());
+        _editor->points.clear();
+        qDeleteAll(_editor->lines.begin(), _editor->lines.end());
+        _editor->lines.clear();
+        _contours.clear();
+
+        cv::GaussianBlur(image, image,
                          cv::Size(
-                                 (int) Config::global->data["/scanner/blur_size"_json_pointer],
-                                 (int) Config::global->data["/scanner/blur_size"_json_pointer]),
+                                 Config::global->value("scanner/blur_size").value<int>(),
+                                 Config::global->value("scanner/blur_size").value<int>()),
                          -1);
         //
         cv::Mat edges;
-        cv::Canny(*_image, edges,
-                  (int) Config::global->data["/scanner/threshold_1"_json_pointer],
-                  (int) Config::global->data["/scanner/threshold_2"_json_pointer]);
-        auto size = (int) Config::global->data["/scanner/fixer/erode_dilate_size"_json_pointer];
+        cv::Canny(image, edges,
+                  Config::global->value("scanner/threshold_1").value<int>(),
+                  Config::global->value("scanner/threshold_2").value<int>());
+        auto size = Config::global->value("scanner/fixer/erode_dilate_size").value<int>();
         auto kernel = cv::getStructuringElement(
                 cv::MORPH_ELLIPSE,
                 cv::Size(2 * size + 1,2 * size + 1),
@@ -212,7 +233,7 @@ public:
         cv::findContours(edges, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
 
         std::vector<Contour> cs;
-        auto min_area = (int) Config::global->data["/scanner/fixer/min_area"_json_pointer];
+        auto min_area = Config::global->value("scanner/fixer/min_area").value<int>();
         for (auto const& points : contours) {
             auto const& contour = Contour(points);
 
@@ -261,18 +282,19 @@ public:
 
             std::vector<cv::Vec4i> lines;
             HoughLinesP(to_fix_mat, lines, 1, CV_PI / 180,
-                        (int) Config::global->data["/scanner/fixer/threshold"_json_pointer],
-                        (double) Config::global->data["/scanner/fixer/min_line_length"_json_pointer],
-                        (double) Config::global->data["/scanner/fixer/max_line_gap"_json_pointer]);
+                        Config::global->value("scanner/fixer/threshold").value<int>(),
+                        Config::global->value("scanner/fixer/min_line_length").value<double>(),
+                        Config::global->value("scanner/fixer/max_line_gap").value<double>());
 
             cv::approxPolyDP(to_fix, fixed,
-                             (double) Config::global->data["/scanner/fixer/epsilon"_json_pointer],
+                             Config::global->value("scanner/fixer/epsilon").value<double>(),
                              true);
 
             _contours.emplace_back();
+            float inv_scale = 1 / compress;
             auto & cnt = _contours.back();
             for (auto const& point : fixed) {
-                auto p = new Point(point.x, point.y);
+                auto p = new Point(point.x * inv_scale, point.y * inv_scale);
 
                 cnt.push_back(p);
                 _editor->points.push_back(p);
@@ -303,6 +325,8 @@ public:
 
     Q_INVOKABLE void exportDXF() {
         auto const& path = QFileDialog::getSaveFileName(nullptr, QObject::tr("Save a file"), "output.dxf", QObject::tr("DXF File (*.dxf)"));
+        if (path.length() == 0)
+            return;
 
         DL_Dxf dxf;
         DL_WriterA* dw = dxf.out(path.toStdString().c_str(), DL_Codes::AC1015);
@@ -353,7 +377,7 @@ public:
 
         dw->sectionEntities();
 
-        auto const pixels = (float) Config::global->data["/cm_pixels"_json_pointer];
+        auto const pixels = Config::global->value("cm_pixels").value<float>();
 
         for (auto const& contour : _contours) {
             for (int i = 0, j = 1; i < contour.size(); ++i, j++) {
@@ -366,8 +390,8 @@ public:
                 dxf.writeLine(
                     *dw,
                     DL_LineData(
-                            point->x / pixels, point->y / pixels, 0,
-                            next->x / pixels, next->y / pixels, 0),
+                            point->x / pixels, (_image->rows - point->y) / pixels, 0,
+                            next->x / pixels, (_image->rows - next->y) / pixels, 0),
                     DL_Attributes("", 256, -1, "BYLAYER"));
             }
         }
@@ -376,8 +400,8 @@ public:
             dxf.writeText(
                     *dw,
                     DL_TextData(
-                            text->x / text->scale / pixels, text->y / text->scale / pixels, 0,
-                            text->x / text->scale / pixels, text->y / text->scale / pixels, 0,
+                            text->x / text->scale / pixels, (_image->rows - text->y / text->scale) / pixels, 0,
+                            text->x / text->scale / pixels, (_image->rows - text->y / text->scale) / text->scale / pixels, 0,
                             text->size / text->scale / pixels, 1,
                             0,0,0,
                             text->text.toStdString().c_str(),

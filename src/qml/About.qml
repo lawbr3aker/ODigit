@@ -15,50 +15,48 @@ ControlsV1.ApplicationWindow {
     title: "About"
 
     width: 280
-    height: 430
+    height: description.height + blockTop.height
 
     ColumnLayout {
         anchors.fill: parent
         spacing: 0
 
-        Row {
+        ColumnLayout {
+            id: blockTop
+            Layout.alignment: Qt.AlignHCenter
             Layout.fillWidth: true
             Layout.preferredHeight: 180
 
-            ColumnLayout {
-                anchors.centerIn: parent
+            Image {
+                Layout.alignment: Qt.AlignHCenter
+                Layout.topMargin: 10
+                Layout.preferredWidth: 100
+                Layout.preferredHeight: 100
 
-                Image {
-                    Layout.alignment: Qt.AlignHCenter
-                    Layout.preferredWidth: 100
-                    Layout.preferredHeight: 100
+                source: 'qrc:/assets/logo'
+            }
 
-                    source: 'qrc:/assets/logo'
-                }
-
-                Text {
-                    Layout.topMargin: 10
-                    font.pixelSize: 16
-                    horizontalAlignment: Text.AlignHCenter
-                    text: translator.global.tr('UlcH')
-                }
+            Text {
+                Layout.topMargin: 10
+                font.pixelSize: 16
+                horizontalAlignment: Text.AlignHCenter
+                text: translator.global.tr('UlcH')
             }
         }
 
-        Row {
+        Rectangle {
+            id: blockBottom
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            Rectangle {
-                anchors.fill: parent
-
-                Text {
-                    anchors.centerIn: parent
-                    width: parent.width - 40
-                    wrapMode: Text.WordWrap
-                    font.pixelSize: 14
-                    text: translator.global.tr('MV2O')
-                }
+            Text {
+                id: description
+                anchors.centerIn: parent
+                padding: 17
+                width: parent.width
+                wrapMode: Text.WordWrap
+                font.pixelSize: 14
+                text: translator.global.tr('MV2O')
             }
         }
     }
