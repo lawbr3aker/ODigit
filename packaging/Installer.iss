@@ -12,14 +12,14 @@ AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
-DefaultDirName={autopf}\{#MyAppName}
+DefaultDirName={autopf}/{#MyAppName}
 ChangesAssociations=yes
 DisableProgramGroupPage=yes
 ;
 PrivilegesRequired=lowest
-OutputDir=E:\Qt\F\FabR\packaging\Inno
-OutputBaseFilename=mysetup
-SetupIconFile=E:\Qt\F\FabR\packaging\Icon\ODigit.ico
+OutputDir=E:/Qt/F/FabR/releases
+OutputBaseFilename=ODigit-Installer
+SetupIconFile=E:/Qt/F/FabR/src/resources/images/icon.ico
 ;
 Compression=lzma2/ultra64
 
@@ -43,53 +43,50 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "programsicon"; Description: "Add to start menu"; GroupDescription: "{cm:AdditionalIcons}"; Flags:
 
 [Files]
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\d3dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\libdxflib.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\libgcc_s_seh-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\libGLESv2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\libopencv_calib3d481.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\libopencv_core481.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\libopencv_dnn481.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\libopencv_features2d481.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\libopencv_flann481.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\libopencv_imgcodecs481.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\libopencv_imgproc481.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\libopencv_objdetect481.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\libwinpthread-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\ODigit.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\Qt5Network.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\Qt5Qml.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\Qt5QmlModels.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\Qt5QmlWorkerScript.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\Qt5Quick.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\Qt5QuickControls2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\Qt5QuickTemplates2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\Qt5Svg.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\imageformats\*"; DestDir: "{app}\imageformats"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\qml\*"; DestDir: "{app}\qml"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\QtQml\*"; DestDir: "{app}\QtQml"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\QtQuick\*"; DestDir: "{app}\QtQuick"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\QtQuick.2\*"; DestDir: "{app}\QtQuick.2"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\styles\*"; DestDir: "{app}\styles"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "E:\Qt\F\FabR\cmake-build-release-mingw-qt\Final\ODigit.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/d3dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/libdxflib.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/libgcc_s_seh-1.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/libGLESv2.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/libopencv_calib3d481.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/libopencv_core481.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/libopencv_dnn481.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/libopencv_features2d481.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/libopencv_flann481.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/libopencv_imgcodecs481.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/libopencv_imgproc481.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/libopencv_objdetect481.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/libwinpthread-1.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/ODigit.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/Qt5Network.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/Qt5Qml.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/Qt5QmlModels.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/Qt5QmlWorkerScript.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/Qt5Quick.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/Qt5QuickControls2.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/Qt5QuickTemplates2.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/Qt5Svg.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:/Qt/F/FabR/build/imageformats/*"; DestDir: "{app}/imageformats"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "E:/Qt/F/FabR/build/qml/*"; DestDir: "{app}/qml"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "E:/Qt/F/FabR/build/styles/*"; DestDir: "{app}/styles"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "E:/Qt/F/FabR/build/platforms/*"; DestDir: "{app}/platforms"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Registry]
-;Root: HKA; Subkey: "Software\Classes\{#MyAppAssocExt}\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppAssocKey}"; ValueData: ""; Flags: uninsdeletevalue
-;Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}"; ValueType: string; ValueName: ""; ValueData: "{#MyAppAssocName}"; Flags: uninsdeletekey
-;Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
-;Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
-;Root: HKA; Subkey: "Software\Classes\Applications\{#MyAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".myp"; ValueData: ""
+;Root: HKA; Subkey: "Software/Classes/{#MyAppAssocExt}/OpenWithProgids"; ValueType: string; ValueName: "{#MyAppAssocKey}"; ValueData: ""; Flags: uninsdeletevalue
+;Root: HKA; Subkey: "Software/Classes/{#MyAppAssocKey}"; ValueType: string; ValueName: ""; ValueData: "{#MyAppAssocName}"; Flags: uninsdeletekey
+;Root: HKA; Subkey: "Software/Classes/{#MyAppAssocKey}/DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}/{#MyAppExeName},0"
+;Root: HKA; Subkey: "Software/Classes/{#MyAppAssocKey}/shell/open/command"; ValueType: string; ValueName: ""; ValueData: """{app}/{#MyAppExeName}"" ""%1"""
+;Root: HKA; Subkey: "Software/Classes/Applications/{#MyAppExeName}/SupportedTypes"; ValueType: string; ValueName: ".myp"; ValueData: ""
 
 [Icons]
-Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: programsicon
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppName}.ico"; Tasks: desktopicon
+Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}/{#MyAppExeName}"; Tasks: programsicon
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}/{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}/{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 

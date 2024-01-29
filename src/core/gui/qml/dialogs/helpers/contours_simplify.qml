@@ -1,0 +1,78 @@
+import QtQuick 2.15
+import QtQuick.Layouts 1.15
+import QtQuick.Controls 1.3 as ControlsV1
+import QtQuick.Controls 2.15
+import QtQuick.Dialogs 1.3
+import QtGraphicalEffects 1.15
+
+import "qrc:Components/Controls" as Components_Controls
+
+import scripts 1.0 as Scripts
+
+Popup {
+    id: root
+    modal: true
+    focus: true
+    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+    property alias threshold: threshold.input
+
+    property var after
+
+    background: Item {
+        anchors.fill: parent
+
+        Rectangle {
+            id: background
+            anchors.fill: parent
+            radius: 5
+            color: '#EDEDED'
+            border.width: 1
+            border.color: '#CACACA'
+        }
+    }
+
+    ColumnLayout {
+        id: content
+
+        RowLayout {
+            Components_Controls.Input {
+                id: threshold
+
+                Layout.fillWidth: false
+                Layout.alignment: Qt.AlignRight
+
+                         title.text: translator.global.tr('I29X')
+                input.implicitWidth: 70
+            }
+        }
+
+        //RowLayout {
+        //    Layout.preferredWidth: parent.width
+//
+        //    Components_Controls.Input {
+        //        id: minWidth
+//
+        //        Layout.alignment: Qt.AlignRight
+        //        Layout.fillWidth: false
+//
+        //                 title.text: translator.global.tr('Ow19')
+        //        input.implicitWidth: 70
+        //    }
+        //}
+
+        RowLayout {
+            Components_Controls.Button {
+                text: '✔'
+
+                Layout.    alignment: Qt.AlignRight
+                Layout.    fillWidth: true
+                Layout.maximumHeight: minWidth.height
+
+                onClicked: {
+                    root.after()
+                }
+            }
+        }
+    }
+}

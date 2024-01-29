@@ -1,0 +1,27 @@
+{
+  "cm_pixels": 56,
+  "interface": {
+    "appearance": {
+      "direction": "ltr",
+      "style": "fusion"
+    },
+    "language": "en"
+  },
+  "plane_height": 0,
+  "plane_width": 0,
+  "scanner": {
+    "blur_size": 1,
+    "simplify": {
+        "default_min_height": 20,
+        "default_min_width": 100
+    },
+    "fixer": {
+      "erode_dilate_size": 3,
+      "min_area": 300,
+      "max_gap": 10,
+      "epsilon": 4
+    },
+    "threshold_1": 100,
+    "threshold_2": 100
+  }
+}
