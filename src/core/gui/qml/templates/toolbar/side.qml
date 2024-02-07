@@ -5,10 +5,16 @@ import QtQuick.Dialogs 1.3
 import "qrc:Components/Controls" as Components_Controls
 import "qrc:Components/Dialogs/Helpers" as Components_Dialogs_Helpers
 
+import scripts 1.0
+
 ColumnLayout {
     property var window
 
     spacing: 5
+
+    Translator {
+        id: translator
+    }
 
     function resetAll() {
         toolMeasure.enable = false
@@ -21,7 +27,7 @@ ColumnLayout {
         Layout.preferredHeight: width
 
         icon.source: 'qrc:Assets/Images/Icons/cursor'
-        hint.text: "Select"
+        hint.text: translator.global.tr('29aj')
 
         onClicked: {
             resetAll()
@@ -34,7 +40,7 @@ ColumnLayout {
         Layout.preferredHeight: width
 
         icon.source: 'qrc:Assets/Images/Icons/home'
-        hint.text: "Home"
+        hint.text: translator.global.tr('4jdn')
 
         onClicked: {
             resetAll()
@@ -48,7 +54,7 @@ ColumnLayout {
         Layout.preferredHeight: width
 
         icon.source: 'qrc:Assets/Images/Icons/zoom-in'
-        hint.text: "Zoom in"
+        hint.text: translator.global.tr('Oi20')
 
         onClicked: {
             window.currentProcess.editor.zoom += 0.15
@@ -61,7 +67,7 @@ ColumnLayout {
         Layout.preferredHeight: width
 
         icon.source: 'qrc:Assets/Images/Icons/zoom-out'
-        hint.text: "Zoom out"
+        hint.text: translator.global.tr('Oi21')
 
         onClicked: {
             window.currentProcess.editor.zoom -= 0.15
@@ -75,7 +81,7 @@ ColumnLayout {
         Layout.preferredHeight: width
 
         icon.source: 'qrc:Assets/Images/Icons/point'
-        hint.text: "Draw point"
+        hint.text: translator.global.tr('Oi22')
 
         property bool enable: false
 
@@ -92,8 +98,6 @@ ColumnLayout {
 
                             window.currentProcess.editor.add_point(x, y)
                             window.currentProcess.editor.update()
-
-                            toolPoint.enable = false
                         }
 
                         return toolPoint.enable
@@ -109,7 +113,7 @@ ColumnLayout {
         Layout.      fillWidth: true
         Layout.preferredHeight: width
 
-        hint.  text: "Draw line"
+        hint.  text: translator.global.tr('Oi23')
         icon.source: 'qrc:Assets/Images/Icons/line'
 
         property bool enable: false
@@ -141,25 +145,9 @@ ColumnLayout {
                     if (hovered !== callback.s) {
                         window.currentProcess.editor.add_line(callback.s, hovered)
                         window.currentProcess.editor.update()
-
-                        toolLine.enable = false
-
-                        window.currentProcess.editor.input.callbacks.push(
-                            function (key, active) {
-                                if (key === Qt.LeftButton) {
-                                    if (window.currentProcess.editor.input.hoveredPoint) {
-                                        window.currentProcess.editor.input.hoveredPoint = undefined
-
-                                        return false
-                                    }
-                                }
-
-                                return true
-                            }
-                        )
                     }
-                } else
-                    callback.s = hovered
+                }
+                callback.s = hovered
             }
 
             return true
@@ -172,7 +160,7 @@ ColumnLayout {
         Layout.preferredHeight: width
 
         icon.source: 'qrc:Assets/Images/Icons/measure'
-        hint.text: "Measure"
+        hint.text: translator.global.tr('Oi24')
 
         property bool enable: false
 
@@ -200,7 +188,15 @@ ColumnLayout {
 
         function callback(key, active) {
             if (key === Qt.LeftButton && active) {
+                if (callback.alive) {
+                    callback.active = true
+                    callback.alive = false
+
+                    delete callback.s
+                }
                 if (!callback.s) {
+                    callback.alive = false
+
                     callback.s = {
                         x: (window.currentProcess.editor.input.mouseX - window.currentProcess.editor.pan.x) / window.currentProcess.editor.zoom,
                         y: (window.currentProcess.editor.input.mouseY - window.currentProcess.editor.pan.y) / window.currentProcess.editor.zoom
@@ -300,7 +296,7 @@ ColumnLayout {
         Layout.preferredHeight: width
 
         icon.source: 'qrc:Assets/Images/Icons/text'
-        hint.text: "Add text"
+        hint.text: translator.global.tr('Oi25')
 
         property bool enable: false
 

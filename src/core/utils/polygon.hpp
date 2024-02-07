@@ -21,8 +21,13 @@ namespace core::utils::polygon {
 
   utils::polygon::polygon
     simplify_midline(
-      _p(polygon, utils::polygon::polygon const&),
-      //
+      _p(polygon  , utils::polygon::polygon const&),
+      _p(threshold, double)
+    );
+
+  utils::polygon::polygon
+    simplify_inline(
+      _p(polygon  , utils::polygon::polygon const&),
       _p(threshold, double)
     );
 

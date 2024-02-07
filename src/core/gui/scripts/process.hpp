@@ -62,7 +62,8 @@ namespace core::gui::scripts {
     Q_INVOKABLE
     void
       step_simplify(
-        _p(threshold, double)
+        _p(threshold_a, double),
+        _p(threshold_b, double)
       );
     Q_INVOKABLE
     void

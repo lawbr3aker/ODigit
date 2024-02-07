@@ -7,12 +7,32 @@
 #include "../macros.h"
 
 namespace core::utils::algebra {
-  typedef struct {
+  typedef struct point {
     _p(x, double);
     _p(y, double);
 
-    operator cv::Point() const { return {int(x), int(y)}; }
-  } point;
+    operator
+      cv::Point(
+      ) const {
+        return {int(x), int(y)};
+      }
+
+    point
+    operator
+      +(
+        _p(other, point const&)
+      ) const {
+        return {x + other.x, y + other.y};
+      }
+
+    point
+    operator
+      /(
+        _p(ratio, double)
+      ) const {
+        return {x / ratio, y / ratio};
+      }
+  };
 
   typedef struct {
     _p(s, point);
@@ -28,6 +48,12 @@ namespace core::utils::algebra {
       y(
         _p(x, double)
       ) const;
+
+    [[nodiscard]]
+    utils::algebra::point
+      x(
+        _p(y, double)
+      ) const;
   } line_eq;
 
   class linear_regression : public utils::algebra::line_eq {
@@ -39,6 +65,11 @@ namespace core::utils::algebra {
 
     void
       add_point(
+        _p(point, utils::algebra::point const&)
+      );
+
+    void
+      sub_point(
         _p(point, utils::algebra::point const&)
       );
 

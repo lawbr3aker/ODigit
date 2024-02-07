@@ -152,6 +152,10 @@ ControlsV1.ApplicationWindow {
                         insertTab(0, "Untitled", defaultProcess)
                         window.currentProcess = getTab(0).children[0]
                         window.currentProcess.active = true
+                        window.currentProcess.step_path('E:/Qt/F/FabR/tests/camera9.jpg')
+                        window.currentProcess.step_detect()
+                        window.currentProcess.step_process()
+                        window.currentProcess.step_simplify(5, 20)
                         currentIndex = 0
                     }
                 }

@@ -15,7 +15,8 @@ Popup {
     focus: true
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
-    property alias threshold: threshold.input
+    property alias a: a.input
+    property alias b: b.input
 
     property var after
 
@@ -37,7 +38,7 @@ Popup {
 
         RowLayout {
             Components_Controls.Input {
-                id: threshold
+                id: a
 
                 Layout.fillWidth: false
                 Layout.alignment: Qt.AlignRight
@@ -47,27 +48,26 @@ Popup {
             }
         }
 
-        //RowLayout {
-        //    Layout.preferredWidth: parent.width
-//
-        //    Components_Controls.Input {
-        //        id: minWidth
-//
-        //        Layout.alignment: Qt.AlignRight
-        //        Layout.fillWidth: false
-//
-        //                 title.text: translator.global.tr('Ow19')
-        //        input.implicitWidth: 70
-        //    }
-        //}
+        RowLayout {
+            Layout.preferredWidth: parent.width
+
+            Components_Controls.Input {
+                id: b
+
+                Layout.alignment: Qt.AlignRight
+                Layout.fillWidth: false
+
+                         title.text: translator.global.tr('Ow19')
+                input.implicitWidth: 70
+            }
+        }
 
         RowLayout {
             Components_Controls.Button {
                 text: '✔'
 
-                Layout.    alignment: Qt.AlignRight
-                Layout.    fillWidth: true
-                Layout.maximumHeight: minWidth.height
+                Layout.alignment: Qt.AlignRight
+                Layout.fillWidth: true
 
                 onClicked: {
                     root.after()

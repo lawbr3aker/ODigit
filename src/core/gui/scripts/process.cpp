@@ -154,18 +154,6 @@ void
       _config->value("scanner/threshold_2").value<int>()
     );
 
-    /*
-    int size = _config->value("scanner/fixer/erode_dilate_size").value<int>();
-    cv::Mat kernel = cv
-      ::getStructuringElement(
-        cv::MORPH_ELLIPSE,
-        cv::Size(2 * size + 1, 2 * size + 1),
-        cv::Point(size, size)
-      );
-    cv::dilate(edges, edges, kernel);
-    cv::erode (edges, edges, kernel);
-    */
-
     core::utils::image::contour_list contours;
     std::vector<std::vector<cv::Point>> contours_temp;
     std::vector<cv::Vec4i> hierarchy;
@@ -228,8 +216,10 @@ void
     _step = 3;
 
     _contours_final.clear();
-    for (auto & contour : _contours)
+    for (auto & contour : _contours) {
+      _editor->add_shape(new gui::components::editor_elements::shape(contour));
       _contours_final.push_back(contour);
+    }
     //
 
     _editor->update_elements();
@@ -237,15 +227,23 @@ void
 
 void
   core::gui::scripts::process::step_simplify(
-    _p(threshold, double)
+    _p(threshold_a, double),
+    _p(threshold_b, double)
   ) {
     if (_step != 3)
       return;
 
     _contours_final.clear();
     for (auto & contour : _contours) {
+      auto temp = contour;
+      temp.push_back(*temp.begin());
 
-       _contours_final.emplace_back(core::utils::polygon::simplify_slope(core::utils::polygon::simplify_midline(contour, threshold), 160. * (M_PI / 180.), 40, threshold));
+      auto result = utils::polygon::simplify_midline(temp, threshold_a);
+      result.push_back(*result.begin());
+
+      result = utils::polygon::simplify_inline(result, threshold_b);
+
+      _contours_final.emplace_back(result);
     }
     //
     _editor->update_elements();

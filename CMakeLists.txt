@@ -43,10 +43,16 @@ set(PROJECT_TRANSLATIONS
     src/translations/tr_fa.ts
 )
 
-add_executable(${PROJECT_NAME}
-    #WIN32
-    ${PROJECT_SOURCES}
-)
+if (${CMAKE_BUILD_TYPE} STREQUAL Release)
+    add_executable(${PROJECT_NAME}
+#        WIN32
+        ${PROJECT_SOURCES}
+    )
+else()
+    add_executable(${PROJECT_NAME}
+        ${PROJECT_SOURCES}
+    )
+endif()
 
 file(GLOB
     PROJECT_DLLS ${PROJECT_SOURCE_DIR}/deps/bin/*.dll

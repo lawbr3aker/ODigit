@@ -180,9 +180,9 @@ Scripts.Editor {
                         for (const point of input.activePoints) {
                             for (const line of root.lines)
                                 if (line.s === point || line.e === point)
-                                    root.removeLine(line)
+                                    root.remove_line(line)
 
-                            root.removePoint(point)
+                            root.remove_point(point)
                         }
                         root.update()
                     } break

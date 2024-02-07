@@ -1,7 +1,7 @@
 Set-Location -Path "build"
 # Build
 cmake -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" ..
-cmake --build . --target ODigit -j6
+cmake --build . --target ODigit -j6 --config Release
 # Change file icon
 ."D:\Tools\Binaries\rcedit-x64.exe" "ODigit.exe" --set-icon "../src/resources/images/icon.ico"
 

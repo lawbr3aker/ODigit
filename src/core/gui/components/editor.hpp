@@ -52,17 +52,21 @@ namespace core::gui::components {
       Q_PROPERTY(double y MEMBER y)
 
      public:
-      point(
-      ): x(0), y(0) {}
-
-      point(
+      explicit point(
         _p(x, double),
         _p(y, double)
-      ): x(x), y(y) {}
+      ): x(x), y(y) {
+      }
+
+      point(
+        _p(other, utils::algebra::point)
+      ): x(other.x), y(other.y) {
+      }
 
       point(
         _p(other, gui::components::editor_elements::point const&)
-      ): x(other.x), y(other.y) {}
+      ): x(other.x), y(other.y) {
+      }
 
      public:
       _p(x, double);
@@ -71,14 +75,14 @@ namespace core::gui::components {
 
     class line: public element {
       Q_OBJECT
-      Q_PROPERTY(gui::components::editor_elements::point * s MEMBER s)
-      Q_PROPERTY(gui::components::editor_elements::point * e MEMBER e)
+      Q_PROPERTY(core::gui::components::editor_elements::point * s MEMBER s)
+      Q_PROPERTY(core::gui::components::editor_elements::point * e MEMBER e)
 
      public:
       line(
-        _p(s, gui::components::editor_elements::point *&),
-        _p(e, gui::components::editor_elements::point *&)
-      ): s(s), e(e) {}
+        _p(s, gui::components::editor_elements::point &),
+        _p(e, gui::components::editor_elements::point &)
+      ): s(&s), e(&e) {}
 
       line(
         _p(other, gui::components::editor_elements::line const&)
@@ -137,6 +141,18 @@ namespace core::gui::components {
       _p(bold   , bool);
       _p(italic , bool);
     };
+
+    class shape: public QObject {
+     public:
+      shape(
+        _p(polygon, std::vector<core::utils::algebra::point> &),
+        _p(closed , bool) = true
+      );
+
+     public:
+      _p(points   , std::vector<core::gui::components::editor_elements::point *>);
+      _p(polylines, std::vector<std::vector<core::gui::components::editor_elements::line *>>);
+    };
   }
 
   class editor: public QQuickPaintedItem {
@@ -179,8 +195,14 @@ namespace core::gui::components {
     Q_INVOKABLE
     core::gui::components::editor_elements::line *
       add_line(
-        _p(s, gui::components::editor_elements::point *),
-        _p(e, gui::components::editor_elements::point *)
+        _p(s, core::gui::components::editor_elements::point *),
+        _p(e, core::gui::components::editor_elements::point *)
+      );
+
+    Q_INVOKABLE
+    core::gui::components::editor_elements::shape *
+      add_shape(
+        _p(shape, core::gui::components::editor_elements::shape *)
       );
 
     Q_INVOKABLE
@@ -201,13 +223,21 @@ namespace core::gui::components {
     Q_INVOKABLE
     void
       remove_point(
-        _p(point, gui::components::editor_elements::point *)
+        _p(point, core::gui::components::editor_elements::point *)
       );
 
     Q_INVOKABLE
     void
       remove_line(
-        _p(line, gui::components::editor_elements::line *)
+        _p(line, core::gui::components::editor_elements::line *)
+      );
+
+    Q_INVOKABLE
+    void
+      simplify(
+        _p(threshold_a, double),
+        _p(threshold_b, double),
+        _p(polylines, std::vector<std::vector<core::gui::components::editor_elements::line *>>) = {}
       );
 
     void
@@ -233,6 +263,7 @@ namespace core::gui::components {
       _p(zoom, float);
     });
     //
+    _p(_shapes, QList<gui::components::editor_elements::shape *>);
     _p(_points, QList<gui::components::editor_elements::point *>);
     _p(_lines , QList<gui::components::editor_elements::line *>);
     _p(_texts , QList<gui::components::editor_elements::text *>);
@@ -243,5 +274,6 @@ namespace core::gui::components {
 Q_DECLARE_METATYPE(core::gui::components::editor_elements::point *)
 Q_DECLARE_METATYPE(core::gui::components::editor_elements::line *)
 Q_DECLARE_METATYPE(core::gui::components::editor_elements::text *)
+Q_DECLARE_METATYPE(core::gui::components::editor_elements::shape *)
 
 Q_DECLARE_METATYPE(core::gui::components::editor *)

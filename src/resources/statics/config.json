@@ -12,8 +12,8 @@
   "scanner": {
     "blur_size": 1,
     "simplify": {
-        "default_min_height": 20,
-        "default_min_width": 100
+        "default_threshold_a": 5,
+        "default_threshold_b": 18
     },
     "fixer": {
       "erode_dilate_size": 3,

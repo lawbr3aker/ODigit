@@ -357,7 +357,7 @@ ControlsV1.ApplicationWindow {
                                 layoutDirection: window.direction
 
                                 Components_Controls.Spinbox {
-                                    id: simplifyMinHeight
+                                    id: simplifyThA
                                     layoutDirection: window.direction
 
                                     title.text: translator.global.tr('A92d')
@@ -367,7 +367,7 @@ ControlsV1.ApplicationWindow {
                                 }
 
                                 Components_Controls.Spinbox {
-                                    id: simplifyMinWidth
+                                    id: simplifyThB
                                     layoutDirection: window.direction
 
                                     title.text: translator.global.tr('Nj1D')
@@ -382,39 +382,39 @@ ControlsV1.ApplicationWindow {
             }
 
             function inputsLoad() {
-                interfaceLanguage .input.currentIndex = interfaceLanguage.input.model.findIndex(x => x.value === config.global.value('interface/language', 'string'))
-                interfaceAppearanceStyle.input.currentIndex = interfaceAppearanceStyle.input.model.findIndex(x => x.value === config.global.value('interface/appearance/style', 'string'))
-                mainPlaneWidth    .input.value = config.global.value('plane_width', 'double')
-                mainPlaneHeight   .input.value = config.global.value('plane_height', 'double')
-                mainCMPixels      .input.value = config.global.value('cm_pixels', 'int')
-                detectorThreshold1.input.value = config.global.value('scanner/threshold_1', 'int')
-                detectorThreshold2.input.value = config.global.value('scanner/threshold_2', 'int')
-                detectorEDSize    .input.value = config.global.value('scanner/fixer/erode_dilate_size', 'int')
-                stabilizerBlurSize.input.value = config.global.value('scanner/blur_size', 'int')
-                fixerMinArea      .input.value = config.global.value('scanner/fixer/min_area', 'int')
-                fixerMaxDistance  .input.value = config.global.value('scanner/fixer/max_gap', 'int')
-                fixerEpsilon      .input.value = config.global.value('scanner/fixer/epsilon', 'double')
-                simplifyMinHeight .input.value = config.global.value('scanner/simplify/default_min_height', 'int')
-                simplifyMinWidth  .input.value = config.global.value('scanner/simplify/default_min_width', 'int')
+                interfaceLanguage .input.currentIndex = interfaceLanguage.input.model.findIndex(x => x.value === config.global.value('interface/language'))
+                interfaceAppearanceStyle.input.currentIndex = interfaceAppearanceStyle.input.model.findIndex(x => x.value === config.global.value('interface/appearance/style'))
+                mainPlaneWidth    .input.value = config.global.value('plane_width')
+                mainPlaneHeight   .input.value = config.global.value('plane_height')
+                mainCMPixels      .input.value = config.global.value('cm_pixels')
+                detectorThreshold1.input.value = config.global.value('scanner/threshold_1')
+                detectorThreshold2.input.value = config.global.value('scanner/threshold_2')
+                detectorEDSize    .input.value = config.global.value('scanner/fixer/erode_dilate_size')
+                stabilizerBlurSize.input.value = config.global.value('scanner/blur_size')
+                fixerMinArea      .input.value = config.global.value('scanner/fixer/min_area')
+                fixerMaxDistance  .input.value = config.global.value('scanner/fixer/max_gap')
+                fixerEpsilon      .input.value = config.global.value('scanner/fixer/epsilon')
+                simplifyThA       .input.value = config.global.value('scanner/simplify/default_threshold_a')
+                simplifyThB       .input.value = config.global.value('scanner/simplify/default_threshold_b')
             }
 
             function inputsSave() {
                 const language = interfaceLanguage.input.model[interfaceLanguage.input.currentIndex].value
-                config.global.set('interface/language'                      , language, 'string')
-                config.global.set('interface/appearance/style'              , interfaceAppearanceStyle.input.model[interfaceAppearanceStyle.input.currentIndex].value, 'string')
-                config.global.set('interface/appearance/direction'          , language === 'fa' ? 'rtl' : 'ltr', 'string')
-                config.global.set('plane_width'                             , mainPlaneWidth            .input.value, 'double')
-                config.global.set('plane_height'                            , mainPlaneHeight           .input.value, 'double')
-                config.global.set('cm_pixels'                               , mainCMPixels              .input.value, 'int')
-                config.global.set('scanner/threshold_1'                     , detectorThreshold1        .input.value, 'int')
-                config.global.set('scanner/threshold_2'                     , detectorThreshold2        .input.value, 'int')
-                config.global.set('scanner/fixer/erode_dilate_size'         , detectorEDSize            .input.value, 'int')
-                config.global.set('scanner/blur_size'                       , stabilizerBlurSize        .input.value, 'int')
-                config.global.set('scanner/fixer/min_area'                  , fixerMinArea              .input.value, 'int')
-                config.global.set('scanner/fixer/max_gap'                   , fixerMaxDistance          .input.value, 'int')
-                config.global.set('scanner/fixer/epsilon'                   , fixerEpsilon              .input.value, 'double')
-                config.global.set('scanner/simplify/default_min_height'     , simplifyMinHeight         .input.value, 'int')
-                config.global.set('scanner/denoise/default_min_width'      , simplifyMinWidth          .input.value, 'int')
+                config.global.set('interface/language'                      , language)
+                config.global.set('interface/appearance/style'              , interfaceAppearanceStyle.input.model[interfaceAppearanceStyle.input.currentIndex].value)
+                config.global.set('interface/appearance/direction'          , language === 'fa' ? 'rtl' : 'ltr')
+                config.global.set('plane_width'                             , mainPlaneWidth            .input.value)
+                config.global.set('plane_height'                            , mainPlaneHeight           .input.value)
+                config.global.set('cm_pixels'                               , mainCMPixels              .input.value)
+                config.global.set('scanner/threshold_1'                     , detectorThreshold1        .input.value)
+                config.global.set('scanner/threshold_2'                     , detectorThreshold2        .input.value)
+                config.global.set('scanner/fixer/erode_dilate_size'         , detectorEDSize            .input.value)
+                config.global.set('scanner/blur_size'                       , stabilizerBlurSize        .input.value)
+                config.global.set('scanner/fixer/min_area'                  , fixerMinArea              .input.value)
+                config.global.set('scanner/fixer/max_gap'                   , fixerMaxDistance          .input.value)
+                config.global.set('scanner/fixer/epsilon'                   , fixerEpsilon              .input.value)
+                config.global.set('scanner/simplify/default_threshold_a'    , simplifyThA               .input.value)
+                config.global.set('scanner/simplify/default_threshold_b'    , simplifyThB               .input.value)
                 config.global.save()
             }
 

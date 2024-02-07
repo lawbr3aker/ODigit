@@ -1,5 +1,5 @@
 #define MyAppName "ODigit"
-#define MyAppVersion "1.0"
+#define MyAppVersion "24.1"
 #define MyAppPublisher "Optitex Pattern Design"
 #define MyAppExeName "ODigit.exe"
 #define MyAppAssocName MyAppName + ""

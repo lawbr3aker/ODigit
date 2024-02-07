@@ -53,6 +53,7 @@ ControlsV1.ApplicationWindow {
                          padding: 17
 
                           text: translator.global.tr('MV2O')
+                    textFormat: Text.RichText
                       wrapMode: Text.WordWrap
                 font.pixelSize: 14
             }

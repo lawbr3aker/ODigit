@@ -54,83 +54,122 @@ core::utils::polygon::polygon
       return {polygon[ps_index], polygon[ps_index]};
   }
 
-core::utils::algebra::line_eq
-  linear_simplify(
-    _p(cursor, core::utils::polygon::polygon::const_iterator &),
-    _p(end   , core::utils::polygon::polygon::const_iterator const&),
-    //
-    _p(threshold, double)
+core::utils::algebra::point
+  close_point(
+    _p(points, std::vector<core::utils::algebra::point> const&),
+    _p(check, core::utils::algebra::point const&)
   ) {
     using namespace core;
 
-    utils::algebra::linear_regression line;
-    for (int i = 0;;){
-      if (cursor + i >= end)
-        break;
-
-      auto const& point = cursor + i++;
-      //
-      line.add_point(*point);
-      if (i > 2 and utils::algebra::point2line(*point, line) > threshold) {
-        cursor += i - 2;
-        break;
+    _p(min_point, core::utils::algebra::point const*) = nullptr;
+    _p(min_distance, double);
+    for (auto const& point : points) {
+      auto distance = utils::algebra::point2point(point, check);
+      if (min_point == nullptr or distance < min_distance) {
+        min_point = &point;
+        min_distance = distance;
       }
     }
 
-    return {
-      line.slope,
-      line.offset
-    };
+    return *min_point;
   }
 
 core::utils::polygon::polygon
   core::utils::polygon::simplify_midline(
-    _p(polygon, core::utils::polygon::polygon const&),
-    //
-    _p(threshold_curve, double)
+    _p(polygon  , core::utils::polygon::polygon const&),
+    _p(threshold, double)
   ) {
     using namespace core;
 
-    std::vector<utils::algebra::line_eq> lines;
-    std::vector<utils::algebra::line> segments;
-
-    for (auto cursor = polygon.begin(); cursor < polygon.end();) {
-      auto last = cursor;
-      auto line = linear_simplify(cursor, polygon.end(), threshold_curve);
-      //
-      if (last != cursor) {
-        lines.push_back(line);
-        segments.push_back({*last, *cursor});
-      } else {
-        lines.push_back(utils::algebra::linear_regression({*last, polygon[0]}));
-        segments.push_back({*last, polygon[0]});
-        break;
-      }
-    }
-
-    utils::polygon::polygon final;
-
-    double t = threshold_curve * 3.14;
+    _p(lines, std::vector<std::pair<utils::algebra::line_eq, utils::algebra::line>>);
     //
-    auto line    = lines.begin()   , last_line    = lines.end() - 1;
-    auto segment = segments.begin(), last_segment = segments.end() - 1;
-    for (; line < lines.end(); last_line = line++, last_segment = segment++) {
-      auto point = utils::algebra::intercept::line_line(*last_line, *line);
+    for (auto cursor = polygon.begin(); cursor < polygon.end();) {
+      auto s = *cursor;
 
-      auto min_x = std::min({last_segment->s.x, last_segment->s.x, segment->s.x, segment->s.x});
-      auto max_x = std::max({last_segment->s.x, last_segment->s.x, segment->s.x, segment->s.x});
-      auto min_y = std::min({last_segment->s.y, last_segment->s.y, segment->s.y, segment->s.y});
-      auto max_y = std::max({last_segment->s.y, last_segment->s.y, segment->s.y, segment->s.y});
+      auto line = core::utils::algebra::linear_regression({
+        *cursor++,
+        *cursor++,
+      });
 
-      if (min_x - t <= point.x and point.x <= max_x + t
-      and min_y - t <= point.y and point.y <= max_y + t) {
-      } else
-        point = line->y(std::abs(point.x - max_x) < std::abs(point.x - min_x) ? max_x : min_x);
+      for (; cursor < polygon.end(); ++cursor) {
+        line.add_point(*cursor);
 
-      final.push_back(point);
+        if (utils::algebra::point2line(*cursor, line) >= threshold) {
+          line.sub_point(*cursor--);
+          break;
+        }
+      }
+
+      auto e = cursor < polygon.end() ? *cursor : *polygon.begin();
+
+      utils::algebra::line segment {
+        close_point({line.y(s.x), line.x(s.y)}, s),
+        close_point({line.y(e.x), line.x(e.y)}, e)
+      };
+
+      lines.emplace_back(line, segment);
     }
 
-    return final;
+    _p(intercepts, std::vector<utils::algebra::line>);
+    //
+    for (auto pair = lines.begin(); pair < lines.end(); ++pair) {
+      auto last_pair = pair - 1 >= lines.begin() ? pair - 1 : lines.end() - 1;
+      auto next_pair = pair + 1 <  lines.end()   ? pair + 1 : lines.begin();
+
+      auto s = utils::algebra::intercept::line_line(last_pair->first, pair->first);
+      auto e = utils::algebra::intercept::line_line(next_pair->first, pair->first);
+
+      intercepts.push_back({
+        utils::algebra::point2point(s, pair->second.s) < threshold ? s : pair->second.s,
+        utils::algebra::point2point(e, pair->second.e) < threshold ? e : pair->second.e
+      });
+    }
+
+    _p(result, utils::polygon::polygon);
+    //
+    for (auto segment = intercepts.begin(); segment < intercepts.end(); ++segment) {
+      auto next_segment = segment + 1 < intercepts.end() ? segment + 1 : intercepts.begin();
+
+      result.push_back((segment->e + next_segment->s) / 2);
+    }
+
+    return result;
+  }
+
+core::utils::polygon::polygon
+  core::utils::polygon::simplify_inline(
+    _p(polygon  , core::utils::polygon::polygon const&),
+    _p(threshold, double)
+  ) {
+    using namespace core;
+
+    _p(lines, std::vector<utils::algebra::line>);
+    //
+    for (auto cursor = polygon.begin(); cursor < polygon.end();) {
+      auto line = core::utils::algebra::line{
+        *cursor++,
+        *cursor++,
+      };
+
+      for (; cursor < polygon.end(); ++cursor) {
+        if (utils::algebra::point2line(*cursor, line) >= threshold) {
+          --cursor;
+          break;
+        }
+
+        line.e = *cursor;
+      }
+
+      lines.push_back(line);
+    }
+
+    _p(result, utils::polygon::polygon);
+    //
+    for (auto segment = lines.begin(); segment < lines.end(); ++segment) {
+      result.push_back(segment->e);
+    }
+
+    return result;
   }
 
 core::utils::polygon::polygon

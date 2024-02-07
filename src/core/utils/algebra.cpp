@@ -7,6 +7,13 @@ core::utils::algebra::point
     return {x, x * slope + offset};
   }
 
+core::utils::algebra::point
+  core::utils::algebra::line_eq::x(
+    _p(y, double)
+  ) const {
+    return {(y - offset) / slope, y};
+  }
+
 core::utils::algebra::linear_regression::linear_regression(
   _p(points, std::vector<core::utils::algebra::point> const&)
 ) : line_eq() {
@@ -24,6 +31,20 @@ void
     sum_y  += point.y;
     sum_xy += point.x * point.y;
     sum_xx += point.x * point.x;
+
+    calculate();
+  }
+
+void
+  core::utils::algebra::linear_regression::sub_point(
+    _p(point, core::utils::algebra::point const&)
+  ) {
+    --n;
+
+    sum_x  -= point.x;
+    sum_y  -= point.y;
+    sum_xy -= point.x * point.y;
+    sum_xx -= point.x * point.x;
 
     calculate();
   }
@@ -75,10 +96,10 @@ double
 
 double
   core::utils::algebra::point2point(
-    _p(point_s, core::utils::algebra::point const&),
-    _p(point_e, core::utils::algebra::point const&)
+    _p(a, core::utils::algebra::point const&),
+    _p(b, core::utils::algebra::point const&)
   ) {
-    return std::sqrt(std::pow(point_e.x - point_s.x, 2) + std::pow(point_e.y - point_s.y, 2));
+    return std::sqrt(std::pow(b.x - a.x, 2) + std::pow(b.y - a.y, 2));
   }
 
 

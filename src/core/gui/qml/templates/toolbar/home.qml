@@ -115,14 +115,14 @@ RowLayout {
 
                 after:
                     function() {
-                        window.currentProcess.step_simplify(parseFloat(simplifyDialog.threshold.text))
+                        window.currentProcess.step_simplify(parseFloat(simplifyDialog.a.text), parseFloat(simplifyDialog.b.text))
                         window.currentProcess.editor.update()
                         simplifyDialog.close()
                     }
             }
 
             Components_Controls.Button {
-                id: denoise
+                id: simplify
 
                 Layout.    fillHeight: true
                 Layout.preferredWidth: 75
@@ -131,7 +131,8 @@ RowLayout {
                 icon.source: 'qrc:Assets/Images/Icons/compress'
 
                 onClicked: {
-                    simplifyDialog.threshold.text = 6
+                    simplifyDialog.a.text = window.currentProcess.config.value('scanner/simplify/default_threshold_a')
+                    simplifyDialog.b.text = window.currentProcess.config.value('scanner/simplify/default_threshold_b')
                     simplifyDialog.open()
                 }
             }
