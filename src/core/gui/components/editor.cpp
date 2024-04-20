@@ -23,28 +23,45 @@ QString
     }
   }
 
+//
+  core::gui::components::editor_elements::point::point(
+    _p(x, double),
+    _p(y, double)
+  ): x(x), y(y) {
+  }
 
 //
-  core::gui::components::editor_elements::shape::shape(
-    _p(polygon, std::vector<core::utils::algebra::point> &),
-    _p(closed , bool)
+  core::gui::components::editor_elements::segment::segment(
+    _p(s, core::gui::components::editor_elements::point &),
+    _p(e, core::gui::components::editor_elements::point &),
+    //
+    _p(polyline, core::gui::components::editor_elements::polyline *)
+  ): s(&s), e(&e), polyline(polyline) {
+    this->s->connected.push_back(this);
+    this->e->connected.push_back(this);
+  }
+//
+  core::gui::components::editor_elements::segment::~segment(
   ) {
-    using namespace core;
+    this->s->connected.removeOne(this);
+    this->e->connected.removeOne(this);
+  }
 
-    auto polyline = polylines.emplace_back();
-
-    gui::components::editor_elements::point * last = nullptr;
-    if (closed)
-      last = new gui::components::editor_elements::point(*(polygon.end() - 1));
-    for (auto point = polygon.begin(); point < polygon.end(); ++point) {
-      auto current = new gui::components::editor_elements::point(*point);
-      points.push_back(current);
-
-      if (last)
-        polyline.push_back(new gui::components::editor_elements::line{*last, *current});
-
-      last = current;
-    }
+void
+  core::gui::components::editor_elements::segment::set_s(
+    _p(point, gui::components::editor_elements::point *)
+  ) {
+    this->s->connected.removeOne(this);
+    s = point;
+    this->s->connected.push_back(this);
+  }
+void
+  core::gui::components::editor_elements::segment::set_e(
+    _p(point, gui::components::editor_elements::point *)
+  ) {
+    this->e->connected.removeOne(this);
+    e = point;
+    this->e->connected.push_back(this);
   }
 
 void
@@ -85,28 +102,6 @@ void
     emit panChanged();
   }
 
-void
-  core::gui::components::editor::update_elements(
-  ) {
-    qDeleteAll(_points.begin(), _points.end()); _points.clear();
-    qDeleteAll(_lines.begin(), _lines.end()); _lines.clear();
-
-    int offset = 0;
-    for (auto & contour : _process->_contours_final) {
-      auto last = new gui::components::editor_elements::point(*(contour.end() - 1));
-      for (auto point = contour.begin(); point < contour.end(); ++point) {
-        _points.push_back(last);
-        //
-        auto current = new gui::components::editor_elements::point(*point);
-        auto line = new gui::components::editor_elements::line{*last, *current};
-        _lines.push_back(line);
-        last = current;
-      }
-
-      offset += contour.size();
-    }
-  }
-
 core::gui::components::editor_elements::point *
   core::gui::components::editor::add_point(
     _p(x, double),
@@ -123,40 +118,76 @@ core::gui::components::editor_elements::point *
     return element;
   }
 
-core::gui::components::editor_elements::line *
-  core::gui::components::editor::add_line(
+core::gui::components::editor_elements::segment *
+  core::gui::components::editor::add_segment(
     _p(s, core::gui::components::editor_elements::point *),
     _p(e, core::gui::components::editor_elements::point *)
   ) {
+    _p(polyline, core::gui::components::editor_elements::polyline *) = nullptr;
+    for (auto const& segment : s->connected) {
+      if (*segment->polyline->segments.end() == segment) {
+        if (segment->e == s) {
+          polyline = segment->polyline;
+        } else if (segment->e == e) {
+          auto * t = &s;
+          s = e;
+          e = *t;
+        }
+        break;
+      }
+    }
+
+    if (not polyline) {
+      polyline = new core::gui::components::editor_elements::polyline();
+      _polylines.push_back(polyline);
+    }
+
     auto element = new core::gui::components
-      ::editor_elements::line(
+      ::editor_elements::segment(
         *s,
-        *e
+        *e,
+        polyline
       );
 
     QQmlEngine::setObjectOwnership(element, QQmlEngine::CppOwnership);
-    _lines.push_back(element);
+    polyline->segments.push_back(element);
 
     return element;
   }
 
-core::gui::components::editor_elements::shape *
-  core::gui::components::editor::add_shape(
-    _p(element, core::gui::components::editor_elements::shape *)
+core::gui::components::editor_elements::polyline *
+  core::gui::components::editor::add_polyline(
+    _p(contour, utils::polygon::polygon const&),
+    _p(closed , bool)
   ) {
-    QQmlEngine::setObjectOwnership(element, QQmlEngine::CppOwnership);
-    _shapes.push_back(element);
+    _polylines.push_back(new gui::components::editor_elements::polyline());
+    auto & element = _polylines.back();
+    element->closed = closed;
+
+    gui::components::editor_elements::point * start = nullptr, * last = nullptr;
+    for (auto point = contour.begin(); point < contour.end(); ++point) {
+      auto current = new gui::components::editor_elements::point(*point);
+      if (not start)
+        start = current;
+
+      _points.push_back(current);
+      if (last)
+        element->segments.push_back(new gui::components::editor_elements::segment{*last, *current, element});
+
+      last = current;
+    }
+    if (closed)
+      element->segments.push_back(new gui::components::editor_elements::segment{*last, *start, element});
 
     return element;
   }
 
-core::gui::components::editor_elements::text *
+void
   core::gui::components::editor::add_text(
     _p(x      , int),
     _p(y      , int),
     _p(w      , int),
     _p(h      , int),
-    _p(scale  , float),
     _p(content, QString const&),
     _p(family , QString const&),
     _p(size   , int),
@@ -169,7 +200,6 @@ core::gui::components::editor_elements::text *
         y,
         w,
         h,
-        scale,
         content,
         family,
         size,
@@ -179,43 +209,205 @@ core::gui::components::editor_elements::text *
 
     QQmlEngine::setObjectOwnership(element, QQmlEngine::CppOwnership);
     _texts.push_back(element);
-
-    return element;
   }
 
 void
   core::gui::components::editor::remove_point(
     _p(point, core::gui::components::editor_elements::point *)
   ) {
-    _points.erase(std::find(_points.begin(), _points.end(), point));
+    for (auto const& segment : point->connected)
+      remove_segment(segment);
+
+    _points.removeOne(point);
   }
 
 void
-  core::gui::components::editor::remove_line(
-    _p(line, core::gui::components::editor_elements::line *)
+  core::gui::components::editor::remove_segment(
+    _p(segment, core::gui::components::editor_elements::segment *)
   ) {
-    _lines.erase(std::find(_lines.begin(), _lines.end(), line));
+    auto polyline = segment->polyline;
+    auto index    = polyline->segments.indexOf(segment);
+    //
+    delete segment;
+
+    auto first = new core::gui::components::editor_elements::polyline(polyline->segments.begin(), polyline->segments.begin() + index);
+    auto last  = new core::gui::components::editor_elements::polyline(polyline->segments.begin() + index + 1, polyline->segments.end());
+
+    for (auto & s : first->segments)
+      s->polyline = first;
+    for (auto & s : last->segments)
+      s->polyline = last;
+
+    _polylines.removeOne(polyline);
+    delete polyline;
+    if (not first->segments.empty())
+      _polylines.push_back(first);
+    if (not last->segments.empty())
+      _polylines.push_back(last);
+  }
+
+void
+  core::gui::components::editor::dissolve_point(
+    _p(point, core::gui::components::editor_elements::point *)
+  ) {
+    for (auto const& segment : point->connected) {
+      auto polyline = segment->polyline;
+
+      core::gui::components::editor_elements::segment * next = nullptr;
+      for (auto const &other : point->connected) {
+        if (other != segment and other->polyline == polyline) {
+          next = other;
+          break;
+        }
+      }
+
+      if (next) {
+        if (segment->e == next->s) {
+          segment->set_e(next->e);
+          remove_segment(next);
+        } else {
+          next->set_s(segment->s);
+          remove_segment(segment);
+        }
+      }
+    }
+
+    _points.removeOne(point);
+  }
+
+void
+  core::gui::components::editor::dissolve_segment(
+    _p(segment, core::gui::components::editor_elements::segment *)
+  ) {
+    remove_segment(segment);
+  }
+
+core::utils::algebra::point
+  close_point(
+    _p(points, std::vector<core::utils::algebra::point> const&),
+    _p(check, core::utils::algebra::point const&)
+  );
+
+QList<core::gui::components::editor_elements::segment *>
+  simplify_midline(
+    _p(polyline , QList<core::gui::components::editor_elements::segment *> const&),
+    _p(threshold, double)
+  ) {
+    using namespace core;
+
+    _p(lines, std::vector<std::pair<utils::algebra::line_eq, gui::components::editor_elements::segment *>>);
+    //
+    for (auto cursor = polyline.begin(); cursor < polyline.end();) {
+      auto segment = *cursor++;
+
+      auto line = core::utils::algebra::linear_regression({
+        *segment->s,
+        *segment->e,
+      });
+
+      for (; cursor < polyline.end() - 1; ++cursor) {
+        auto segment_temp = *cursor;
+        if (segment_temp->s->connected.size() > 2)
+          break;
+
+        line.add_point(*segment_temp->e);
+        if (utils::algebra::distance::point_line(*segment_temp->e, line) >= threshold
+          or utils::algebra::distance::point_line(*segment_temp->s, line) >= threshold) {
+          line.sub_point(*segment_temp->e);
+
+          break;
+        }
+      }
+
+      if (cursor < polyline.end())
+        segment->set_e((*cursor)->s);
+
+      lines.emplace_back(line, segment);
+    }
+
+    _p(result, QList<core::gui::components::editor_elements::segment *>);
+
+    for (auto const& pair : lines)
+      result.push_back(new gui::components::editor_elements::segment(*pair.second));
+
+//    for (auto pair = lines.begin(); pair < lines.end(); ++pair) {
+//      auto last_pair = pair - 1 >= lines.begin() ? pair - 1 : lines.end() - 1;
+//      auto next_pair = pair + 1 <  lines.end()   ? pair + 1 : lines.begin();
+//
+//      auto line = pair->first;
+//      auto segment = pair->second;
+//
+//      auto s = close_point({line.y(segment->s->x), line.x(segment->s->y)}, *segment->s);
+//      auto e = close_point({line.y(segment->e->x), line.x(segment->e->y)}, *segment->e);
+//
+//      auto st = utils::algebra::intercept::line_line(last_pair->first, pair->first);
+//      auto et = utils::algebra::intercept::line_line(next_pair->first, pair->first);
+//
+//      *segment->s = utils::algebra::distance::point_point(st, s) < threshold ? st : s;
+//      *segment->e = utils::algebra::distance::point_point(et, e) < threshold ? et : e;
+//
+//      result.push_back(new gui::components::editor_elements::segment(*segment));
+//    }
+
+    return result;
+  }
+
+QList<core::gui::components::editor_elements::segment *>
+  simplify_inline(
+    _p(polyline , QList<core::gui::components::editor_elements::segment *> const&),
+    _p(threshold, double)
+  ) {
+    using namespace core;
+
+    _p(result, QList<core::gui::components::editor_elements::segment *>);
+    //
+    for (auto cursor = polyline.begin(); cursor < polyline.end();) {
+      auto segment = *cursor++;
+
+      for (; cursor < polyline.end() - 1; ++cursor) {
+        auto segment_temp = *cursor;
+        if (segment_temp->s->connected.size() > 2)
+          break;
+
+        if (utils::algebra::distance::point_segment(*segment_temp->e, *segment) >= threshold) {
+          break;
+        }
+
+        segment->set_e(segment_temp->e);
+      }
+
+      result.push_back(new gui::components::editor_elements::segment(*segment));
+    }
+
+    return result;
   }
 
 void
   core::gui::components::editor::simplify(
     _p(threshold_a, double),
     _p(threshold_b, double),
-    _p(polylines, std::vector<std::vector<core::gui::components::editor_elements::line *>>)
+    _p(iterations , int),
+    _p(polylines, QList<core::gui::components::editor_elements::polyline *>)
   ) {
-    for (auto const& polyline : polylines) {
-      utils::polygon::polygon temp;
+    if (polylines.empty())
+      polylines = _polylines;
 
-      for (auto const& line : polyline)
-        temp.push_back({line->s->x, line->s->y});
-      if ((*(polyline.end() - 1))->e == (*polyline.begin())->s) {
-        auto begin = *polyline.begin();
-
-        temp.push_back({begin->s->x, begin->s->y});
+    for (int _ = 0; _ < iterations; ++_) {
+      for (auto &polyline: polylines) {
+        auto simplified_1 = simplify_midline(polyline->segments, threshold_a);
+        qDeleteAll(polyline->segments);
+        polyline->segments.clear();
+        polyline->segments.append(simplified_1);
+        auto simplified_2 = simplify_inline(polyline->segments, threshold_b);
+        qDeleteAll(polyline->segments);
+        polyline->segments.clear();
+        polyline->segments.append(simplified_2);
       }
-
-      result = utils::polygon::simplify_inline(result, threshold_b);
     }
+
+    for (auto point = _points.begin(); point < _points.end(); ++point)
+      if ((*point)->connected.empty())
+        _points.erase(point--);
   }
 
 void
@@ -241,49 +433,173 @@ void
       painter->drawPixmap(pan, *_image.temp);
     }
 
-    for (auto const& shape : _shapes) {
-      painter->setPen(QPen(QColor(55, 173, 118), 4));
-      for (auto const& polyline : shape->polylines) {
-        for (auto const& line : polyline) {
-          painter->drawLine(
-            QPoint{int(line->s->x * zoom + pan.x()), int(line->s->y * zoom + pan.y())},
-            QPoint{int(line->e->x * zoom + pan.x()), int(line->e->y * zoom + pan.y())}
-          );
-        }
-      }
-
-      #define radius 10
-      for (auto const& point : shape->points) {
-        switch (point->_status) {
+    for (auto const& polyline : _polylines) {
+      for (auto const& segment : polyline->segments) {
+        QColor color;
+        switch (segment->_status) {
           case gui::components::editor_elements::element::statuses::DEFAULT:
-            painter->setBrush(QColor(16, 138, 227));
+            color.setRgb(55, 173, 118);
             break;
           case gui::components::editor_elements::element::statuses::ACTIVE:
-            painter->setBrush(QColor(73, 33, 35));
+            color.setRgb(73, 33, 35);
             break;
           case gui::components::editor_elements::element::statuses::HOVER:
-            painter->setBrush(QColor(7, 56, 92));
+            color.setRgb(7, 56, 92);
             break;
           default:;
         }
+        painter->setPen(QPen(color, 4));
 
-        painter->drawEllipse(
-          int(point->x * zoom + pan.x() - radius / 2.),
-          int(point->y * zoom + pan.y() - radius / 2.),
-          radius, radius
+        painter->drawLine(
+          QPoint{int(segment->s->x * zoom + pan.x()), int(segment->s->y * zoom + pan.y())},
+          QPoint{int(segment->e->x * zoom + pan.x()), int(segment->e->y * zoom + pan.y())}
         );
       }
     }
 
+    const int radius = gui::components::editor_elements::point::radius;
+    //
+    painter->setPen(QPen({}, 0));
+    for (auto const& point : _points) {
+      QColor color;
+      switch (point->_status) {
+        case gui::components::editor_elements::element::statuses::DEFAULT:
+          color.setRgb(16, 138, 227);
+          break;
+        case gui::components::editor_elements::element::statuses::ACTIVE:
+          color.setRgb(73, 33, 35);
+          break;
+        case gui::components::editor_elements::element::statuses::HOVER:
+          color.setRgb(7, 56, 92);
+          break;
+        default:;
+      }
+      painter->setBrush(QBrush(color));
+
+      painter->drawEllipse(
+        int(point->x * zoom + pan.x() - radius / 2.),
+        int(point->y * zoom + pan.y() - radius / 2.),
+        radius, radius
+      );
+    }
+
+    painter->setPen(QPen(QColor(0, 255, 100), 4));
     for (auto const &text: _texts) {
       QFont font;
-      font.setFamily(text->family);
-      double s = zoom / text->scale;
-      font.setPixelSize(s * text->size);
-      font.setBold(text->bold);
-      font.setItalic(text->italic);
+      font.setFamily   (text->family);
+      font.setPixelSize(text->size * zoom);
+      font.setBold     (text->bold);
+      font.setItalic   (text->italic);
+      //
       painter->setFont(font);
-      painter->drawText((int) (s * text->x + pan.x()), (int) (s * text->y + pan.y()), (int) (s * text->w),
-                        (int) (s * text->h), 0, text->content);
+      painter->drawText(
+        int(double(text->x) * zoom + pan.x()),
+        int(double(text->y) * zoom + pan.y()),
+        int(double(text->w) * zoom),
+        int(double(text->h) * zoom),
+        0,
+        text->content
+      );
     }
+  }
+
+void
+  core::gui::components::editor::export_dxf(
+    _p(path, QString const&),
+    _p(rx  , double),
+    _p(ry  , double)
+  ) const {
+    DL_Dxf dxf;
+
+    auto writer = dxf.out(path.toStdString().c_str(), DL_Codes::AC1009);
+    if (writer == nullptr)
+      return;
+
+    dxf.writeHeader(*writer);
+    writer->dxfString(9, "$INSUNITS");
+    writer->dxfInt(70, 5);
+    writer->dxfString(9, "$DIMEXE");
+    writer->dxfReal(40, 1.25);
+    writer->dxfString(9, "$TEXTSTYLE");
+    writer->dxfString(7, "Standard");
+    // vector variable:
+    writer->dxfString(9, "$LIMMIN");
+    writer->dxfReal(10, 0.0);
+    writer->dxfReal(20, 0.0);
+    writer->sectionEnd();
+
+    writer->sectionTables();
+    dxf.writeVPort(*writer);
+    writer->tableLineTypes(3);
+    dxf.writeLineType(*writer, DL_LineTypeData("BYBLOCK", 0));
+    dxf.writeLineType(*writer, DL_LineTypeData("BYLAYER", 0));
+    dxf.writeLineType(*writer, DL_LineTypeData("CONTINUOUS", 0));
+    writer->tableEnd();
+
+    writer->tableLayers(1);
+    dxf.writeLayer(
+            *writer,
+            DL_LayerData("0", 0),
+            DL_Attributes("", DL_Codes::black, 100, "CONTINUOUS"));
+    writer->tableEnd();
+
+    dxf.writeStyle(*writer);
+    dxf.writeView(*writer);
+    dxf.writeUcs(*writer);
+    writer->tableAppid(1);
+    writer->tableAppidEntry(0x12);
+    writer->dxfString(2, "ACAD");
+    writer->dxfInt(70, 0);
+    writer->tableEnd();
+
+    dxf.writeBlockRecord(*writer);
+    writer->tableEnd();
+    writer->sectionEnd();
+
+    writer->sectionBlocks();
+    writer->sectionEnd();
+
+    writer->sectionEntities();
+    for (auto const& polyline : _polylines) {
+      for (auto const& segment : polyline->segments) {
+        dxf.writeLine(
+          *writer,
+          DL_LineData(
+            segment->s->x * rx, segment->s->y * ry, 0,
+            segment->e->x * rx, segment->e->y * ry, 0
+          ),
+          DL_Attributes("", 256, -1, "BYLAYER")
+        );
+      }
+    }
+
+    for (auto const& text: _texts) {
+      qDebug() << text->x * rx << text->y * ry << text->w * std::abs(rx) << text->h *std::abs(ry) << text->size * std::abs(ry);
+      dxf.writeText(
+        *writer,
+        DL_TextData(
+          text->x * rx,
+          text->y * ry,
+          0,
+          0,
+          0,
+          0,
+          5, 1,
+          0, 0, 0,
+          text->content.toStdString(),
+          std::to_string(int(std::ceil(text->size * std::abs(ry)))) + "px arial",
+          0
+        ),
+        DL_Attributes("", 256, -1, "BYLAYER")
+      );
+    }
+    writer->sectionEnd();
+
+    dxf.writeObjects(*writer);
+    dxf.writeObjectsEnd(*writer);
+
+    writer->dxfEOF();
+    writer->close();
+
+    delete writer;
   }

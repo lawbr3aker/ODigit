@@ -16,22 +16,138 @@ ColumnLayout {
         id: translator
     }
 
-    function resetAll() {
+    function resetAll(select) {
+        if (select)
+            toolSelect.enable = false
         toolMeasure.enable = false
-        toolPoint.enable = false
-        toolLine.enable = false
+        toolPoint  .enable = false
+        toolLine   .enable = false
     }
 
     Components_Controls.Button {
+        id: toolSelect
         Layout.fillWidth: true
         Layout.preferredHeight: width
 
         icon.source: 'qrc:Assets/Images/Icons/cursor'
+        icon.parent.height: width
+        icon.parent.anchors.margins: 6
         hint.text: translator.global.tr('29aj')
 
+        property bool enable: false
+
+        Component.onCompleted: {
+            enable = true
+        }
+
         onClicked: {
-            resetAll()
-            window.currentProcess.editor.input.callbacks = []
+            if (!enable) {
+                resetAll()
+                enable = true
+            }
+        }
+
+        onEnableChanged: {
+            if (!enable) {
+                delete callback.s
+                callback.active = false
+            } else {
+                window.currentProcess.editor.input.callbacks = []
+                window.currentProcess.editor.input.callbacks.push(callback)
+            }
+        }
+
+        function callback(key, active) {
+            if (!toolSelect.enable)
+                return
+
+            if (key === Qt.LeftButton && !window.currentProcess.editor.status['selected']) {
+                if (active) {
+                    if (!callback.s) {
+                        callback.s = {
+                            x: window.currentProcess.editor.input.mouseRealX,
+                            y: window.currentProcess.editor.input.mouseRealY
+                        }
+
+                        callback.active = true
+
+                        window.currentProcess.editor.callbacks.push(
+                            function rect(ctx, px, py, z) {
+                                if (!callback.active)
+                                    return
+
+                                callback.e = {
+                                    x: window.currentProcess.editor.input.mouseRealX,
+                                    y: window.currentProcess.editor.input.mouseRealY
+                                }
+
+                                callback.size = {
+                                    w: Math.abs(callback.e.x - callback.s.x),
+                                    h: Math.abs(callback.e.y - callback.s.y)
+                                }
+
+                                ctx.strokeStyle = "#FF0000"
+
+                                ctx.lineWidth = 2
+                                ctx.beginPath()
+                                ctx.strokeRect(
+                                    Math.min(callback.s.x, callback.e.x) * window.currentProcess.editor.zoom + window.currentProcess.editor.pan.x,
+                                    Math.min(callback.s.y, callback.e.y) * window.currentProcess.editor.zoom + window.currentProcess.editor.pan.y,
+                                    callback.size.w * window.currentProcess.editor.zoom,
+                                    callback.size.h * window.currentProcess.editor.zoom
+                                )
+                                ctx.stroke()
+
+                                return true
+                            }
+                        )
+                    }
+                } else {
+                    if (callback.active) {
+                        callback.active = false
+
+                        for (const point of window.currentProcess.editor.points) {
+                            if (window.currentProcess.editor.input.checkPoint(
+                                    point,
+                                    Math.min(callback.s.x, callback.e.x), Math.min(callback.s.y, callback.e.y),
+                                    Math.max(callback.s.x, callback.e.x), Math.max(callback.s.y, callback.e.y),
+                                )) {
+                                if (!window.currentProcess.editor.input.activePoints.includes(point)) {
+                                    point.status = 'active'
+                                    window.currentProcess.editor.input.activePoints.push(point)
+                                }
+                            }
+                        }
+
+                        for (const polyline of window.currentProcess.editor.polylines) {
+                            for (const segment of polyline.segments) {
+                                const midpoint = {
+                                    x: (segment.s.x + segment.e.x) / 2,
+                                    y: (segment.s.y + segment.e.y) / 2
+                                }
+
+                                if (window.currentProcess.editor.input.checkPoint(
+                                        midpoint,
+                                        Math.min(callback.s.x, callback.e.x), Math.min(callback.s.y, callback.e.y),
+                                        Math.max(callback.s.x, callback.e.x), Math.max(callback.s.y, callback.e.y),
+                                    )) {
+                                    if (!window.currentProcess.editor.input.activeSegments.includes(segment)) {
+                                        segment.status = 'active'
+                                        window.currentProcess.editor.input.activeSegments.push(segment)
+                                    }
+                                }
+                            }
+                        }
+
+                        window.currentProcess.editor.update()
+
+                        toolSelect.enable = false
+                        toolSelect.enable = true
+                    }
+                }
+            }
+
+            return true
         }
     }
 
@@ -40,6 +156,8 @@ ColumnLayout {
         Layout.preferredHeight: width
 
         icon.source: 'qrc:Assets/Images/Icons/home'
+        icon.parent.height: width
+        icon.parent.anchors.margins: 6
         hint.text: translator.global.tr('4jdn')
 
         onClicked: {
@@ -54,10 +172,14 @@ ColumnLayout {
         Layout.preferredHeight: width
 
         icon.source: 'qrc:Assets/Images/Icons/zoom-in'
+        icon.parent.height: width
+        icon.parent.anchors.margins: 6
         hint.text: translator.global.tr('Oi20')
 
         onClicked: {
-            window.currentProcess.editor.zoom += 0.15
+            window.currentProcess.editor.zoom += 0.03
+            if (window.currentProcess.editor.zoom > 2.2)
+                window.currentProcess.editor.zoom = 2.2
             window.currentProcess.editor.update()
         }
     }
@@ -67,10 +189,14 @@ ColumnLayout {
         Layout.preferredHeight: width
 
         icon.source: 'qrc:Assets/Images/Icons/zoom-out'
+        icon.parent.height: width
+        icon.parent.anchors.margins: 6
         hint.text: translator.global.tr('Oi21')
 
         onClicked: {
-            window.currentProcess.editor.zoom -= 0.15
+            window.currentProcess.editor.zoom -= 0.03
+            if (window.currentProcess.editor.zoom < 0.03)
+                window.currentProcess.editor.zoom = 0.03
             window.currentProcess.editor.update()
         }
     }
@@ -81,29 +207,34 @@ ColumnLayout {
         Layout.preferredHeight: width
 
         icon.source: 'qrc:Assets/Images/Icons/point'
+        icon.parent.height: width
+        icon.parent.anchors.margins: 6
         hint.text: translator.global.tr('Oi22')
 
         property bool enable: false
 
         onClicked: {
             if (!enable) {
-                resetAll()
+                resetAll(true)
                 enable = true
 
-                window.currentProcess.editor.input.callbacks.push(
-                    function callback(key, active) {
-                        if (key === Qt.LeftButton && active) {
-                            const x = (window.currentProcess.editor.input.mouseX - window.currentProcess.editor.pan.x) / window.currentProcess.editor.zoom
-                            const y = (window.currentProcess.editor.input.mouseY - window.currentProcess.editor.pan.y) / window.currentProcess.editor.zoom
-
-                            window.currentProcess.editor.add_point(x, y)
-                            window.currentProcess.editor.update()
-                        }
-
-                        return toolPoint.enable
-                    }
-                )
+                window.currentProcess.editor.input.callbacks.push(callback)
             }
+        }
+
+        function callback(key, active) {
+            if (!toolPoint.enable)
+                return
+
+            if (key === Qt.LeftButton && active && !window.currentProcess.editor.status['selected']) {
+                const x = (window.currentProcess.editor.input.mouseX - window.currentProcess.editor.pan.x) / window.currentProcess.editor.zoom
+                const y = (window.currentProcess.editor.input.mouseY - window.currentProcess.editor.pan.y) / window.currentProcess.editor.zoom
+
+                window.currentProcess.editor.add_point(x, y)
+                window.currentProcess.editor.update()
+            }
+
+            return true
         }
     }
 
@@ -113,14 +244,16 @@ ColumnLayout {
         Layout.      fillWidth: true
         Layout.preferredHeight: width
 
-        hint.  text: translator.global.tr('Oi23')
         icon.source: 'qrc:Assets/Images/Icons/line'
+        icon.parent.height: width
+        icon.parent.anchors.margins: 6
+        hint.text: translator.global.tr('Oi23')
 
         property bool enable: false
 
         onClicked: {
             if (!enable) {
-                resetAll()
+                resetAll(true)
                 enable = true
 
                 window.currentProcess.editor.input.callbacks.push(callback)
@@ -143,7 +276,7 @@ ColumnLayout {
 
                 if (callback.s) {
                     if (hovered !== callback.s) {
-                        window.currentProcess.editor.add_line(callback.s, hovered)
+                        window.currentProcess.editor.add_segment(callback.s, hovered)
                         window.currentProcess.editor.update()
                     }
                 }
@@ -160,13 +293,15 @@ ColumnLayout {
         Layout.preferredHeight: width
 
         icon.source: 'qrc:Assets/Images/Icons/measure'
+        icon.parent.height: width
+        icon.parent.anchors.margins: 6
         hint.text: translator.global.tr('Oi24')
 
         property bool enable: false
 
         onClicked: {
             if (!enable) {
-                resetAll()
+                resetAll(true)
                 enable = true
 
                 callback.active = true
@@ -278,10 +413,16 @@ ColumnLayout {
         after:
             function() {
                 for (let i = 0, row = 1; i < addText.value.text.length; i += toolAddText.callback.columns, ++row) {
-                    window.currentProcess.editor.addText(
-                        toolAddText.callback.s.x - window.currentProcess.editor.pan.x, toolAddText.callback.s.y + addText.fontSize * row - window.currentProcess.editor.pan.y,
-                        toolAddText.callback.size.w, toolAddText.callback.size.h, window.currentProcess.editor.zoom,
-                        addText.value.text.substr(i, toolAddText.callback.columns), "Consolas", addText.fontSize, addText.fontBold, addText.fontItalic
+                    window.currentProcess.editor.add_text(
+                        (toolAddText.callback.s.x - window.currentProcess.editor.pan.x) / window.currentProcess.editor.zoom,
+                        (toolAddText.callback.s.y - window.currentProcess.editor.pan.y + addText.fontSize * row) / window.currentProcess.editor.zoom,
+                        toolAddText.callback.size.w / window.currentProcess.editor.zoom,
+                        toolAddText.callback.size.h / window.currentProcess.editor.zoom,
+                        addText.value.text.substr(i, toolAddText.callback.columns),
+                        "Consolas",
+                        addText.fontSize / window.currentProcess.editor.zoom,
+                        addText.fontBold,
+                        addText.fontItalic
                     )
                 }
                 window.currentProcess.editor.update()
@@ -296,6 +437,8 @@ ColumnLayout {
         Layout.preferredHeight: width
 
         icon.source: 'qrc:Assets/Images/Icons/text'
+        icon.parent.height: width
+        icon.parent.anchors.margins: 6
         hint.text: translator.global.tr('Oi25')
 
         property bool enable: false

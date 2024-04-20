@@ -5,6 +5,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Dialogs 1.3
 import QtQuick.Controls.Styles 1.4
 
+import "qrc:Dialogs" as Dialogs
 import "qrc:/Components/Controls" as Components_Controls
 import "qrc:/Components/Templates" as Components_Templates
 import "qrc:/Components/Templates/Toolbar" as Components_Templates_Toolbar
@@ -23,12 +24,45 @@ ControlsV1.ApplicationWindow {
 
     property var currentProcess
 
-    property Config config: Config {
-        id: config
+    Config {
+        id: rootConfig
     }
 
     Translator {
-        id: translator
+        id: rootTranslator
+    }
+
+    Registration {
+        id: registration
+    }
+
+    Dialogs.Registration {
+        id: registrationDialog
+
+        modality: Qt.ApplicationModal
+
+        onClosing: {
+            if (!succeed) {
+                Qt.quit()
+            }
+        }
+
+        Timer {
+            id: fps
+
+            interval: 1000 * 2 //  60 * 3
+             running: true
+              repeat: false
+
+            onTriggered: {
+                const key  = rootConfig.global.value('license/key')
+                const seed = rootConfig.global.value('license/seed')
+
+                if (!registration.check_key(key, seed)) {
+                    registrationDialog.show()
+                }
+            }
+        }
     }
 
     ColumnLayout {
@@ -76,16 +110,16 @@ ControlsV1.ApplicationWindow {
                 z: 2
                 Layout.alignment: Qt.AlignTop
                 Layout.fillHeight: true
-                Layout.maximumHeight: 370
-                Layout.minimumWidth: 40
-                Layout.maximumWidth: 40
+                Layout.minimumHeight: 370
+                Layout.maximumWidth: 43
+                Layout.minimumWidth: Layout.maximumWidth
 
                 readonly property Item container: Item {
                     id: ts
                     parent: tabSide
                     width: parent.width
 
-                    readonly property Components_Templates_Toolbar.Side toolbar: Components_Templates_Toolbar.Side {
+                    Components_Templates_Toolbar.Side {
                         parent: tabSide.container
                         anchors.fill: parent
                         width: parent.width
@@ -126,7 +160,7 @@ ControlsV1.ApplicationWindow {
                         id: defaultProcess
 
                         Components_Templates.Process {
-                            config: window.config.global
+                            config: rootConfig.global
                         }
                     }
 
@@ -152,10 +186,10 @@ ControlsV1.ApplicationWindow {
                         insertTab(0, "Untitled", defaultProcess)
                         window.currentProcess = getTab(0).children[0]
                         window.currentProcess.active = true
-                        window.currentProcess.step_path('E:/Qt/F/FabR/tests/camera9.jpg')
-                        window.currentProcess.step_detect()
-                        window.currentProcess.step_process()
-                        window.currentProcess.step_simplify(5, 20)
+                        //window.currentProcess.step_path('E:/Qt/ODigit/tests/camera9.jpg')
+                        //window.currentProcess.step_detect()
+                        //window.currentProcess.step_process()
+                        //window.currentProcess.editor.simplify(5, 20, 3)
                         currentIndex = 0
                     }
                 }
@@ -164,6 +198,6 @@ ControlsV1.ApplicationWindow {
     }
 
     Component.onCompleted: {
-        direction = config.global.value('interface/appearance/direction', 'string') == 'rtl' ? Qt.RightToLeft : Qt.LeftToRight
+        direction = rootConfig.global.value('interface/appearance/direction', 'string') == 'rtl' ? Qt.RightToLeft : Qt.LeftToRight
     }
 }

@@ -16,8 +16,6 @@ ControlsV1.ApplicationWindow {
     minimumWidth: 750
     minimumHeight: 520
 
-    property var master
-
     property int direction
 
     Config {
@@ -376,6 +374,22 @@ ControlsV1.ApplicationWindow {
                                     input.onValueChanged: tabs.inputsChanged()
                                 }
                             }
+
+                            Row {
+                                spacing: 50
+                                Layout.fillWidth: true
+                                layoutDirection: window.direction
+
+                                Components_Controls.Spinbox {
+                                    id: simplifyThIts
+                                    layoutDirection: window.direction
+
+                                    title.text: translator.global.tr('DAd5')
+                                    input.implicitWidth: 70
+
+                                    input.onValueChanged: tabs.inputsChanged()
+                                }
+                            }
                         }
                     }
                 }
@@ -389,13 +403,14 @@ ControlsV1.ApplicationWindow {
                 mainCMPixels      .input.value = config.global.value('cm_pixels')
                 detectorThreshold1.input.value = config.global.value('scanner/threshold_1')
                 detectorThreshold2.input.value = config.global.value('scanner/threshold_2')
-                detectorEDSize    .input.value = config.global.value('scanner/fixer/erode_dilate_size')
+                detectorEDSize    .input.value = config.global.value('scanner/fixer/dilate_size')
                 stabilizerBlurSize.input.value = config.global.value('scanner/blur_size')
                 fixerMinArea      .input.value = config.global.value('scanner/fixer/min_area')
                 fixerMaxDistance  .input.value = config.global.value('scanner/fixer/max_gap')
                 fixerEpsilon      .input.value = config.global.value('scanner/fixer/epsilon')
                 simplifyThA       .input.value = config.global.value('scanner/simplify/default_threshold_a')
                 simplifyThB       .input.value = config.global.value('scanner/simplify/default_threshold_b')
+                simplifyThIts     .input.value = config.global.value('scanner/simplify/default_iterations')
             }
 
             function inputsSave() {
@@ -408,13 +423,14 @@ ControlsV1.ApplicationWindow {
                 config.global.set('cm_pixels'                               , mainCMPixels              .input.value)
                 config.global.set('scanner/threshold_1'                     , detectorThreshold1        .input.value)
                 config.global.set('scanner/threshold_2'                     , detectorThreshold2        .input.value)
-                config.global.set('scanner/fixer/erode_dilate_size'         , detectorEDSize            .input.value)
+                config.global.set('scanner/fixer/dilate_size'               , detectorEDSize            .input.value)
                 config.global.set('scanner/blur_size'                       , stabilizerBlurSize        .input.value)
                 config.global.set('scanner/fixer/min_area'                  , fixerMinArea              .input.value)
                 config.global.set('scanner/fixer/max_gap'                   , fixerMaxDistance          .input.value)
                 config.global.set('scanner/fixer/epsilon'                   , fixerEpsilon              .input.value)
                 config.global.set('scanner/simplify/default_threshold_a'    , simplifyThA               .input.value)
                 config.global.set('scanner/simplify/default_threshold_b'    , simplifyThB               .input.value)
+                config.global.set('scanner/simplify/default_iterations'     , simplifyThIts             .input.value)
                 config.global.save()
             }
 
@@ -442,7 +458,7 @@ ControlsV1.ApplicationWindow {
                 id: applyButton
                 Layout.minimumWidth: 130
 
-                text: translator.global.tr('OeZG')
+                title.text: translator.global.tr('OeZG')
 
                 enabled: false
 
@@ -457,7 +473,8 @@ ControlsV1.ApplicationWindow {
             }
 
             Components_Controls.Button {
-                text: translator.global.tr('NtjB')
+                Layout.minimumWidth: 80
+                title.text: translator.global.tr('NtjB')
 
                 onClicked: {
                     tabs.inputsLoad()
@@ -468,6 +485,6 @@ ControlsV1.ApplicationWindow {
     }
 
     Component.onCompleted: {
-        direction = config.global.value('interface/appearance/direction', 'string') == 'rtl' ? Qt.RightToLeft : Qt.LeftToRight
+        direction = config.global.value('interface/appearance/direction') == 'rtl' ? Qt.RightToLeft : Qt.LeftToRight
     }
 }

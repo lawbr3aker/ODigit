@@ -27,7 +27,6 @@ RowLayout {
         id: settings
 
         modality: Qt.ApplicationModal
-          master: window
     }
 
     ColumnLayout {
@@ -44,6 +43,7 @@ RowLayout {
 
                 title. text: translator.global.tr('M9sY')
                 icon.source: 'qrc:Assets/Images/Icons/open-file'
+                icon.parent.height: 40
 
                 onClicked: {
                     window.currentProcess.step_path()
@@ -58,6 +58,7 @@ RowLayout {
 
                 title. text: translator.global.tr('N2cU')
                 icon.source: 'qrc:Assets/Images/Icons/save-file'
+                icon.parent.height: 40
             }
         }
 
@@ -97,9 +98,16 @@ RowLayout {
 
                 title. text: translator.global.tr('H6eV')
                 icon.source: 'qrc:Assets/Images/Icons/render'
+                icon.parent.height: 40
 
                 onClicked: {
                     window.currentProcess.step_process()
+                    for (const point of window.currentProcess.editor.input.activePoints)
+                        point.status = 'default'
+                    window.currentProcess.editor.input.activePoints = []
+                    for (const segment of window.currentProcess.editor.input.activeSegments)
+                        segment.status = 'default'
+                    window.currentProcess.editor.input.activeSegments = []
                     window.currentProcess.editor.update()
                 }
             }
@@ -115,7 +123,7 @@ RowLayout {
 
                 after:
                     function() {
-                        window.currentProcess.step_simplify(parseFloat(simplifyDialog.a.text), parseFloat(simplifyDialog.b.text))
+                        window.currentProcess.editor.simplify(parseFloat(simplifyDialog.a.text), parseFloat(simplifyDialog.b.text), simplifyDialog.c.value)
                         window.currentProcess.editor.update()
                         simplifyDialog.close()
                     }
@@ -129,10 +137,12 @@ RowLayout {
 
                 title. text: translator.global.tr('DSe1')
                 icon.source: 'qrc:Assets/Images/Icons/compress'
+                icon.parent.height: 40
 
                 onClicked: {
-                    simplifyDialog.a.text = window.currentProcess.config.value('scanner/simplify/default_threshold_a')
-                    simplifyDialog.b.text = window.currentProcess.config.value('scanner/simplify/default_threshold_b')
+                    simplifyDialog.a.text  = window.currentProcess.config.value('scanner/simplify/default_threshold_a')
+                    simplifyDialog.b.text  = window.currentProcess.config.value('scanner/simplify/default_threshold_b')
+                    simplifyDialog.c.value = window.currentProcess.config.value('scanner/simplify/default_iterations')
                     simplifyDialog.open()
                 }
             }
@@ -145,6 +155,7 @@ RowLayout {
 
                 title. text: translator.global.tr('D5hY')
                 icon.source: 'qrc:Assets/Images/Icons/dxf'
+                icon.parent.height: 40
 
                 onClicked: {
                     window.currentProcess.step_export_dxf()
@@ -186,6 +197,7 @@ RowLayout {
 
                 title. text: translator.global.tr('Q8kB')
                 icon.source: 'qrc:Assets/Images/Icons/setting'
+                icon.parent.height: 40
 
                 onClicked: {
                     settings.show()
@@ -196,8 +208,9 @@ RowLayout {
                 Layout.    fillHeight: true
                 Layout.preferredWidth: 55
 
-                icon.source: 'qrc:Assets/Images/Icons/about'
                  title.text: translator.global.tr('T2lC')
+                icon.source: 'qrc:Assets/Images/Icons/about'
+                icon.parent.height: 40
 
                 onClicked: {
                     about.show()

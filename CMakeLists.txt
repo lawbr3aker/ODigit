@@ -11,6 +11,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_CXX_FLAGS -O3)
+
 include_directories(deps/include)
 
 set(Qt5_DIR "F:\\Qt\\5.15.2\\mingw81_64\\lib\\cmake\\Qt5")
@@ -20,12 +22,16 @@ set(PROJECT_SOURCES
     src/qml.qrc
     src/main.cpp
 
+    src/core/macros.h
+
     src/core/utils/polygon.hpp
     src/core/utils/polygon.cpp
     src/core/utils/image.hpp
     src/core/utils/image.cpp
     src/core/utils/dxf.cpp
     src/core/utils/dxf.hpp
+    src/core/utils/algebra.cpp
+    src/core/utils/algebra.hpp
 
     src/core/gui/scripts/config.hpp
     src/core/gui/scripts/config.cpp
@@ -38,14 +44,11 @@ set(PROJECT_SOURCES
     src/core/gui/components/editor.cpp
     src/core/gui/components/ruler.hpp
     src/core/gui/components/ruler.cpp
-        src/core/utils/algebra.cpp src/core/utils/algebra.hpp src/core/macros.h)
-set(PROJECT_TRANSLATIONS
-    src/translations/tr_fa.ts
-)
+        src/core/utils/hash.cpp src/core/utils/hash.hpp src/core/gui/scripts/registration.cpp src/core/gui/scripts/registration.hpp)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL Release)
     add_executable(${PROJECT_NAME}
-#        WIN32
+        WIN32
         ${PROJECT_SOURCES}
     )
 else()

@@ -6,6 +6,8 @@ import QtQuick.Layouts 1.15
 ControlsV1.Button {
   id: root
 
+  implicitHeight: 34
+
   readonly property alias icon : icon
   readonly property alias title: title
   readonly property alias hint : hint
@@ -15,30 +17,56 @@ ControlsV1.Button {
 
     spacing: 0
 
-    Image {
-      id: icon
+    Item {
+      Layout. fillWidth: true
+      Layout.fillHeight: true
 
-      Layout.      alignment: Qt.AlignTop | Qt.AlignHCenter
-      Layout.preferredHeight: Math.min(45, parent.height - 2 * Layout.topMargin)
-      Layout. preferredWidth: implicitWidth / implicitHeight * Layout.preferredHeight
-      Layout.      topMargin: 7
+      Layout.margins: icon.parent.anchors.margins
+
+      Item {
+        width: parent.width
+
+        anchors.margins: 10
+
+        Image {
+          id: icon
+
+          anchors.horizontalCenter: parent.horizontalCenter
+
+           width: parent.width / implicitWidth * implicitHeight < parent.height ? parent.width : parent.height / implicitHeight * implicitWidth
+          height: width / implicitWidth * implicitHeight
+        }
+      }
+
+      Component.onCompleted: {
+        if (icon.implicitHeight === 0) {
+          Layout.maximumHeight = 0
+          Layout.margins = 0
+        }
+      }
     }
 
     Text {
       id: title
 
-      property string text
-
       Layout.preferredWidth: parent.width
-      Layout.    fillHeight: true
-      Layout.  bottomMargin: 3
+      Layout.  bottomMargin: 4
                 leftPadding: 5
                rightPadding: leftPadding
 
                  wrapMode: Text.WordWrap
       horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignBottom
-           font.pixelSize: Qt.application.font.pixelSize * 0.9
+
+      Component.onCompleted: {
+        if (title.text == '') {
+            Layout.maximumHeight = 0
+        }
+        if (icon.implicitHeight === 0) {
+            Layout.bottomMargin = 0
+            verticalAlignment = Text.AlignVCenter
+        }
+      }
     }
   }
 

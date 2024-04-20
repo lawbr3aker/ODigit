@@ -19,13 +19,19 @@
 #include "core/gui/scripts/process.hpp"
 #include "core/gui/scripts/config.hpp"
 #include "core/gui/scripts/translator.hpp"
+#include "core/gui/scripts/registration.hpp"
 
-#include "psimpl/psimpl.h"
+#include "core/utils/hash.hpp"
 
-//#define SPLASH
+
+#ifdef NDEBUG
+#define SPLASH
+#endif
 
 int main(int argc, char *argv[]) {
-  qputenv("QSG_RENDER_LOOP", "basic");
+//  qputenv("QSG_RENDER_LOOP", "basic");
+//  qDebug() << core::gui::scripts::registration::check_key("1CA5BEVBE6NGQP8J", "18B1B9");
+//  return 1;
 
   QApplication app(argc, argv);
 
@@ -46,9 +52,10 @@ int main(int argc, char *argv[]) {
   qmlRegisterType<core::gui::components::editor> ("scripts", 1, 0, "Editor");
   qmlRegisterType<core::gui::components::ruler>  ("scripts", 1, 0, "Ruler");
   //
-  qmlRegisterType<core::gui::scripts::process>   ("scripts", 1, 0, "Process");
-  qmlRegisterType<core::gui::scripts::config>    ("scripts", 1, 0, "Config");
-  qmlRegisterType<core::gui::scripts::translator>("scripts", 1, 0, "Translator");
+  qmlRegisterType<core::gui::scripts::process>     ("scripts", 1, 0, "Process");
+  qmlRegisterType<core::gui::scripts::config>      ("scripts", 1, 0, "Config");
+  qmlRegisterType<core::gui::scripts::translator>  ("scripts", 1, 0, "Translator");
+  qmlRegisterType<core::gui::scripts::registration>("scripts", 1, 0, "Registration");
 
   _p(format, QSurfaceFormat);
      format.setSwapInterval(0);
@@ -81,17 +88,18 @@ int main(int argc, char *argv[]) {
 
   if (language == "fa") {
     QApplication::setFont({
-      "IranSansXFaNum DemiBold",
-//      QFontDatabase::applicationFontFamilies(
-//        QFontDatabase::addApplicationFont(":/Assets/Fonts/default-fa")
-//      ).at(0),
-      10,
+      QFontDatabase::applicationFontFamilies(
+        QFontDatabase::addApplicationFont(":/Assets/Fonts/Default-FA")
+      ).at(0),
+      9,
       QFont::Bold
     });
   } else if (language == "en") {
     QApplication::setFont({
-      "Consolas",
-      10,
+      QFontDatabase::applicationFontFamilies(
+        QFontDatabase::addApplicationFont(":/Assets/Fonts/Default-EN")
+      ).at(0),
+      9,
       QFont::Bold
     });
   }

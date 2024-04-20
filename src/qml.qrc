@@ -5,6 +5,7 @@
     <qresource prefix="/Dialogs">
         <file alias="Settings.qml">dialogs/settings.qml</file>
         <file alias="About.qml">dialogs/about.qml</file>
+        <file alias="Registration.qml">dialogs/registration.qml</file>
     </qresource>
     <qresource prefix="/Components/Controls">
         <file alias="Button.qml">core/gui/qml/controls/button.qml</file>
@@ -15,7 +16,10 @@
     </qresource>
     <qresource prefix="/Components/Dialogs/Helpers">
         <file alias="AddText.qml">core/gui/qml/dialogs/helpers/add_text.qml</file>
-        <file alias="ContoursSimplify.qml">core/gui/qml/dialogs/helpers/contours_simplify.qml</file>
+        <file alias="ContoursSimplify.qml">core/gui/qml/dialogs/helpers/simplify.qml</file>
+    </qresource>
+    <qresource prefix="/Components/Dialogs/Message">
+        <file alias="Info.qml">core/gui/qml/dialogs/message/info.qml</file>
     </qresource>
     <qresource prefix="/Components/Templates">
         <file alias="Editor.qml">core/gui/qml/templates/editor.qml</file>
@@ -33,7 +37,8 @@
         <file alias="config">resources/statics/config.json</file>
     </qresource>
     <qresource prefix="/Assets/Fonts">
-        <file alias="default-fa">resources/fonts/Peyda-Bold.ttf</file>
+        <file alias="Default-FA">resources/fonts/Default-FA.ttf</file>
+        <file alias="Default-EN">resources/fonts/Default-EN.ttf</file>
     </qresource>
     <qresource prefix="/Assets/Images">
         <file alias="icon">resources/images/icon.ico</file>

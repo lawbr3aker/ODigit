@@ -17,7 +17,7 @@ Scripts.Process {
 
     property Scripts.Editor editor
 
-    property GridLayout container: GridLayout {
+    GridLayout {
         parent: root
         anchors.fill: parent
 

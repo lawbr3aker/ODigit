@@ -37,7 +37,7 @@ namespace core::utils::algebra {
   typedef struct {
     _p(s, point);
     _p(e, point);
-  } line;
+  } segment;
 
   typedef struct {
     _p(slope , double) = 0;
@@ -90,23 +90,25 @@ namespace core::utils::algebra {
     _p(sum_xx, double) = 0;
   };
 
-  double
-    point2line(
-      _p(point, utils::algebra::point const&),
-      _p(line , utils::algebra::line  const&)
-    );
+  namespace distance {
+    double
+      point_segment(
+        _p(point  , utils::algebra::point const&),
+        _p(segment, utils::algebra::segment  const&)
+      );
 
-  double
-    point2line(
-      _p(point  , utils::algebra::point   const&),
-      _p(line_eq, utils::algebra::line_eq const&)
-    );
+    double
+      point_line(
+        _p(point, utils::algebra::point   const&),
+        _p(line , utils::algebra::line_eq const&)
+      );
 
-  double
-    point2point(
-      _p(point_s, utils::algebra::point const&),
-      _p(point_e, utils::algebra::point const&)
-    );
+    double
+      point_point(
+        _p(point_s, utils::algebra::point const&),
+        _p(point_e, utils::algebra::point const&)
+      );
+  }
 
   namespace intercept {
     utils::algebra::point

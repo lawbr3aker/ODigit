@@ -61,12 +61,6 @@ namespace core::gui::scripts {
       );
     Q_INVOKABLE
     void
-      step_simplify(
-        _p(threshold_a, double),
-        _p(threshold_b, double)
-      );
-    Q_INVOKABLE
-    void
       step_export_dxf(
         _p(path, QString const&) = ""
       ) const;
@@ -83,8 +77,7 @@ namespace core::gui::scripts {
     _p(_image , std::unique_ptr<utils::image::image>) = nullptr;
     _p(_step  , int);
 
-    _p(_contours      , utils::polygon::polygon_list);
-    _p(_contours_final, utils::polygon::polygon_list);
+    _p(_contours, utils::polygon::polygon_list);
   };
 }
 

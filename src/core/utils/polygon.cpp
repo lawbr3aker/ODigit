@@ -17,7 +17,7 @@ core::utils::polygon::polygon
     double max_width = 0;
     for (int ps = 0; ps < polygon.size(); ++ps)
       for (int pe = ps + 1; pe < polygon.size(); ++pe) {
-        double distance = utils::algebra::point2point(polygon[ps], polygon[pe]);
+        double distance = utils::algebra::distance::point_point(polygon[ps], polygon[pe]);
         if (distance > max_width) {
           ps_index = ps;
           pe_index = pe;
@@ -31,7 +31,7 @@ core::utils::polygon::polygon
     int    max_index = 0;
     double max_distance = 0;
     for (int i = 1; i < polygon.size() - 1; ++i) {
-      double distance = utils::algebra::point2line(polygon[i], utils::algebra::line{polygon[ps_index], polygon[pe_index]});
+      double distance = utils::algebra::distance::point_segment(polygon[i], utils::algebra::segment{polygon[ps_index], polygon[pe_index]});
       if (distance > max_distance) {
         max_index    = i;
         max_distance = distance;
@@ -64,7 +64,7 @@ core::utils::algebra::point
     _p(min_point, core::utils::algebra::point const*) = nullptr;
     _p(min_distance, double);
     for (auto const& point : points) {
-      auto distance = utils::algebra::point2point(point, check);
+      auto distance = utils::algebra::distance::point_point(point, check);
       if (min_point == nullptr or distance < min_distance) {
         min_point = &point;
         min_distance = distance;
@@ -81,7 +81,7 @@ core::utils::polygon::polygon
   ) {
     using namespace core;
 
-    _p(lines, std::vector<std::pair<utils::algebra::line_eq, utils::algebra::line>>);
+    _p(lines, std::vector<std::pair<utils::algebra::line_eq, utils::algebra::segment>>);
     //
     for (auto cursor = polygon.begin(); cursor < polygon.end();) {
       auto s = *cursor;
@@ -94,7 +94,7 @@ core::utils::polygon::polygon
       for (; cursor < polygon.end(); ++cursor) {
         line.add_point(*cursor);
 
-        if (utils::algebra::point2line(*cursor, line) >= threshold) {
+        if (utils::algebra::distance::point_line(*cursor, line) >= threshold) {
           line.sub_point(*cursor--);
           break;
         }
@@ -102,7 +102,7 @@ core::utils::polygon::polygon
 
       auto e = cursor < polygon.end() ? *cursor : *polygon.begin();
 
-      utils::algebra::line segment {
+      utils::algebra::segment segment {
         close_point({line.y(s.x), line.x(s.y)}, s),
         close_point({line.y(e.x), line.x(e.y)}, e)
       };
@@ -110,7 +110,7 @@ core::utils::polygon::polygon
       lines.emplace_back(line, segment);
     }
 
-    _p(intercepts, std::vector<utils::algebra::line>);
+    _p(intercepts, std::vector<utils::algebra::segment>);
     //
     for (auto pair = lines.begin(); pair < lines.end(); ++pair) {
       auto last_pair = pair - 1 >= lines.begin() ? pair - 1 : lines.end() - 1;
@@ -120,8 +120,8 @@ core::utils::polygon::polygon
       auto e = utils::algebra::intercept::line_line(next_pair->first, pair->first);
 
       intercepts.push_back({
-        utils::algebra::point2point(s, pair->second.s) < threshold ? s : pair->second.s,
-        utils::algebra::point2point(e, pair->second.e) < threshold ? e : pair->second.e
+        utils::algebra::distance::point_point(s, pair->second.s) < threshold ? s : pair->second.s,
+        utils::algebra::distance::point_point(e, pair->second.e) < threshold ? e : pair->second.e
       });
     }
 
@@ -143,24 +143,24 @@ core::utils::polygon::polygon
   ) {
     using namespace core;
 
-    _p(lines, std::vector<utils::algebra::line>);
+    _p(lines, std::vector<utils::algebra::segment>);
     //
     for (auto cursor = polygon.begin(); cursor < polygon.end();) {
-      auto line = core::utils::algebra::line{
+      auto segment = core::utils::algebra::segment{
         *cursor++,
         *cursor++,
       };
 
       for (; cursor < polygon.end(); ++cursor) {
-        if (utils::algebra::point2line(*cursor, line) >= threshold) {
+        if (utils::algebra::distance::point_segment(*cursor, segment) >= threshold) {
           --cursor;
           break;
         }
 
-        line.e = *cursor;
+        segment.e = *cursor;
       }
 
-      lines.push_back(line);
+      lines.push_back(segment);
     }
 
     _p(result, utils::polygon::polygon);
@@ -196,7 +196,7 @@ core::utils::polygon::polygon
         auto past_point = cursor++;
         auto last_point = cursor++;
         //
-        auto length = utils::algebra::point2point(*past_point, *last_point);
+        auto length = utils::algebra::distance::point_point(*past_point, *last_point);
         auto points = utils::algebra::linear_regression({*past_point, *last_point});
 
         for (auto & point = cursor; point < polygon.end(); ++point) {
@@ -218,10 +218,10 @@ core::utils::polygon::polygon
             }
             return;
           } else {
-            length += utils::algebra::point2point(*last_point, *point);
+            length += utils::algebra::distance::point_point(*last_point, *point);
             points.add_point(*point);
 
-            if (utils::algebra::point2line(*point, points) > threshold_curve) {
+            if (utils::algebra::distance::point_line(*point, points) > threshold_curve) {
               line = &points;
               //
               --cursor; reconstruct(++index, line);

@@ -67,7 +67,7 @@ Popup {
 
                 Components_Controls.Button {
                     id: fontBold
-                    //text: '𝐁'
+                    text: '𝐁'
                     Layout.maximumHeight: fontSize.height
                     Layout.maximumWidth: 25
 

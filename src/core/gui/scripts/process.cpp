@@ -39,12 +39,8 @@ void
 
     _image = std::make_unique<core::utils::image::image>(core::utils::image::open(path_final.toStdString()));
 
-    if (not _contours.empty()) {
+    if (not _contours.empty())
       _contours.clear();
-      _contours_final.clear();
-
-      _editor->update_elements();
-    }
 
     _step = 1;
   }
@@ -153,6 +149,14 @@ void
       _config->value("scanner/threshold_1").value<int>(),
       _config->value("scanner/threshold_2").value<int>()
     );
+    auto size = _config->value("scanner/fixer/ed_size").value<int>();
+    auto kernel = cv
+      ::getStructuringElement(
+        cv::MORPH_ELLIPSE,
+        cv::Size(2 * size + 1,2 * size + 1),
+        cv::Point(size, size)
+      );
+    cv::dilate(edges, edges, kernel);
 
     core::utils::image::contour_list contours;
     std::vector<std::vector<cv::Point>> contours_temp;
@@ -197,12 +201,12 @@ void
       }
 
       if (keep) {
-        utils::image::contour fixed = contour;
-//        cv::approxPolyDP(
-//          contour, fixed,
-//          filter_epsilon,
-//          true
-//        );
+        utils::image::contour fixed;
+        cv::approxPolyDP(
+          contour, fixed,
+          filter_epsilon,
+          true
+        );
         //
         auto & contour_final = _contours.emplace_back();
         for (auto const &point: fixed)
@@ -215,38 +219,16 @@ void
 
     _step = 3;
 
-    _contours_final.clear();
-    for (auto & contour : _contours) {
-      _editor->add_shape(new gui::components::editor_elements::shape(contour));
-      _contours_final.push_back(contour);
+    for (auto & polyline : _editor->_polylines) {
+      qDeleteAll(polyline->segments);
+      polyline->segments.clear();
+      _editor->_polylines.removeOne(polyline);
     }
-    //
+    qDeleteAll(_editor->_points);
+    _editor->_points.clear();
 
-    _editor->update_elements();
-  }
-
-void
-  core::gui::scripts::process::step_simplify(
-    _p(threshold_a, double),
-    _p(threshold_b, double)
-  ) {
-    if (_step != 3)
-      return;
-
-    _contours_final.clear();
-    for (auto & contour : _contours) {
-      auto temp = contour;
-      temp.push_back(*temp.begin());
-
-      auto result = utils::polygon::simplify_midline(temp, threshold_a);
-      result.push_back(*result.begin());
-
-      result = utils::polygon::simplify_inline(result, threshold_b);
-
-      _contours_final.emplace_back(result);
-    }
-    //
-    _editor->update_elements();
+    for (auto & contour : _contours)
+      _editor->add_polyline(contour, true);
   }
 
 void
@@ -271,5 +253,5 @@ void
 
     auto ratio = 1. / _config->value("cm_pixels").value<double>();
 
-    core::utils::dxf::write(_contours_final, path_final.toStdString(), ratio, -ratio);
+    _editor->export_dxf(path_final, ratio, -ratio);
   }

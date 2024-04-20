@@ -17,6 +17,7 @@ Popup {
 
     property alias a: a.input
     property alias b: b.input
+    property alias c: c.input
 
     property var after
 
@@ -58,6 +59,20 @@ Popup {
                 Layout.fillWidth: false
 
                          title.text: translator.global.tr('Ow19')
+                input.implicitWidth: 70
+            }
+        }
+
+        RowLayout {
+            Layout.preferredWidth: parent.width
+
+            Components_Controls.Spinbox {
+                id: c
+
+                Layout.alignment: Qt.AlignRight
+                Layout.fillWidth: false
+
+                         title.text: translator.global.tr('O9JD')
                 input.implicitWidth: 70
             }
         }

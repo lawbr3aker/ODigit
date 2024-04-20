@@ -72,30 +72,28 @@ core::utils::algebra::linear_regression &
   }
 
 double
-  core::utils::algebra::point2line(
-    _p(point  , core::utils::algebra::point   const&),
-    _p(line_eq, core::utils::algebra::line_eq const&)
+  core::utils::algebra::distance::point_line(
+    _p(point, core::utils::algebra::point   const&),
+    _p(line , core::utils::algebra::line_eq const&)
   ) {
-    return std::fabs(line_eq.slope * point.x - point.y + line_eq.offset) / std::sqrt(line_eq.slope * line_eq.slope + 1);
+    return std::fabs(line.slope * point.x - point.y + line.offset) / std::sqrt(line.slope * line.slope + 1);
   }
 
 double
-  core::utils::algebra::point2line(
-    _p(point, core::utils::algebra::point const&),
-    _p(line , core::utils::algebra::line  const&)
+  core::utils::algebra::distance::point_segment(
+    _p(point  , core::utils::algebra::point const&),
+    _p(segment, core::utils::algebra::segment const&)
   ) {
     using namespace core;
 
-    utils::algebra::point ps{point.x - line.s.x, point.y - line.s.y};
-    utils::algebra::point es{line.e.x - line.s.x, line.e.y - line.s.y};
+    utils::algebra::point ps{point.x - segment.s.x, point.y - segment.s.y};
+    utils::algebra::point es{segment.e.x - segment.s.x, segment.e.y - segment.s.y};
 
-    double cross = ps.x * es.y - ps.y * es.x;
-
-    return std::abs(cross / std::sqrt(es.x * es.x + es.y * es.y));
+    return std::abs((ps.x * es.y - ps.y * es.x) / std::sqrt(es.x * es.x + es.y * es.y));
   }
 
 double
-  core::utils::algebra::point2point(
+  core::utils::algebra::distance::point_point(
     _p(a, core::utils::algebra::point const&),
     _p(b, core::utils::algebra::point const&)
   ) {
