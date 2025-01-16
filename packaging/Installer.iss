@@ -1,5 +1,5 @@
 #define MyAppName "ODigit"
-#define MyAppVersion "24.1"
+#define MyAppVersion "25.1"
 #define MyAppPublisher "Optitex Pattern Design"
 #define MyAppExeName "ODigit.exe"
 #define MyAppAssocName MyAppName + ""
@@ -14,18 +14,20 @@ AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}/{#MyAppName}
 ChangesAssociations=yes
 DisableProgramGroupPage=yes
+UninstallDisplayIcon={app}/{#MyAppExeName}
 ;
 PrivilegesRequired=lowest
 OutputDir=E:/Qt/ODigit/releases
 OutputBaseFilename=ODigit-Installer
 SetupIconFile=E:/Qt/ODigit/src/resources/images/icon.ico
-;
+;lzma2/ultra64
 Compression=lzma2/ultra64
 
 SolidCompression=yes
 CompressionThreads=25
 ;
-WizardSmallImageFile=
+WizardSmallImageFile=E:/Qt/ODigit/src/resources/images/logo.bmp
+WizardImageFile=E:/Qt/ODigit/src/resources/images/logo2.bmp
 WizardStyle=modern
 DisableWelcomePage=no
 DisableDirPage=no
@@ -81,11 +83,14 @@ Source: "E:/Qt/ODigit/build/platforms/*"; DestDir: "{app}/platforms"; Flags: ign
 ;Root: HKA; Subkey: "Software/Classes/{#MyAppAssocKey}/DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}/{#MyAppExeName},0"
 ;Root: HKA; Subkey: "Software/Classes/{#MyAppAssocKey}/shell/open/command"; ValueType: string; ValueName: ""; ValueData: """{app}/{#MyAppExeName}"" ""%1"""
 ;Root: HKA; Subkey: "Software/Classes/Applications/{#MyAppExeName}/SupportedTypes"; ValueType: string; ValueName: ".myp"; ValueData: ""
+;Root: HKCU; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{#MyAppName} {#MyAppVersion}"; ValueType: string; ValueName: "DisplayIcon"; ValueData: "{app}/{#MyAppExeName}"
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}/{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"; Tasks: programsicon
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}/{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"; Tasks: desktopicon
+Name: "{group}\{#MyAppName}"; Filename: "{app}/{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"
+Name: "{group}\Uninstall  {#MyAppName}"; Filename: "{app}/{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"
+Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{app}/{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"
 
 [Run]
 Filename: "{app}/{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-

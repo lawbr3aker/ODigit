@@ -17,7 +17,7 @@ ControlsV1.ApplicationWindow {
     minimumWidth: 850
     minimumHeight: 650
     visible: true
-    title: "ODigit"
+    title: "ODigit 25.1"
     modality: Qt.ApplicationModal
 
     property int direction

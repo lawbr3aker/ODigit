@@ -48,6 +48,12 @@ RowLayout {
                 onClicked: {
                     window.currentProcess.step_path()
                     window.currentProcess.step_detect()
+                    for (const point of window.currentProcess.editor.input.activePoints)
+                        point.status = 'default'
+                    window.currentProcess.editor.input.activePoints = []
+                    for (const segment of window.currentProcess.editor.input.activeSegments)
+                        segment.status = 'default'
+                    window.currentProcess.editor.input.activeSegments = []
                     window.currentProcess.editor.update()
                 }
             }

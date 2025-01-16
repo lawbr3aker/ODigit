@@ -1,5 +1,5 @@
 #include "./process.hpp"
-void shimage(cv::Mat const& image, int width = 1200);
+
 core::gui::components::editor *
   core::gui::scripts::process::set_editor(
     _p(value, core::gui::components::editor *)
@@ -39,8 +39,13 @@ void
 
     _image = std::make_unique<core::utils::image::image>(core::utils::image::open(path_final.toStdString()));
 
-    if (not _contours.empty())
-      _contours.clear();
+    for (auto & polyline : _editor->_polylines) {
+      qDeleteAll(polyline->segments);
+      polyline->segments.clear();
+      _editor->_polylines.removeOne(polyline);
+    }
+    qDeleteAll(_editor->_points);
+    _editor->_points.clear();
 
     _step = 1;
   }
@@ -51,6 +56,9 @@ void
     if (_step != 1)
       return;
 
+    cv::Mat temp;
+    cv::cvtColor(*_image, temp, cv::COLOR_BGR2GRAY);
+
     cv::aruco::ArucoDetector
       detector(
         cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50),
@@ -60,7 +68,7 @@ void
     std::vector<int> ids;
     std::vector<std::vector<cv::Point2f>> coordinates;
     //
-    detector.detectMarkers(*_image, coordinates, ids);
+    detector.detectMarkers(temp, coordinates, ids);
 
     // find corners
     cv::Point2f
@@ -71,10 +79,10 @@ void
 
     for (int i = 0; i < ids.size(); ++i) {
       switch (ids[i]) {
-        case 11: corner_br = &coordinates[i][2]; break;
-        case 12: corner_bl = &coordinates[i][3]; break;
-        case 13: corner_tl = &coordinates[i][0]; break;
-        case 14: corner_tr = &coordinates[i][1]; break;
+        case 11: corner_tl = &coordinates[i][2]; break;
+        case 12: corner_tr = &coordinates[i][3]; break;
+        case 13: corner_br = &coordinates[i][0]; break;
+        case 14: corner_bl = &coordinates[i][1]; break;
         default:;
       }
     }
@@ -116,17 +124,80 @@ void
 
     _step = 2;
 
-    cv::imwrite("output.jpg", *_image);
-
     _editor->set_image(&*_image);
     _editor->home();
   }
+
+std::tuple<int, int> _(cv::Mat const& src) {
+  int channels[1] = {0};
+  int histSize[1] = {256};
+  float histRanges[2] = {0.0, 256.0};
+  const float *ranges[1] = {histRanges};
+
+  cv::MatND hist;
+  calcHist(&src, 1, channels, cv::Mat(), hist, 1, histSize, ranges);
+
+  auto *histogram = (unsigned char *) (hist.data);
+
+  double optimalThresh1, optimalThresh2;
+  double W0K(0), W1K, W2K, W3K, M0, M1, M2, M3, currVarB, maxBetweenVar(0), M0K(0), M1K, M2K, M3K, MT(0);
+
+  int N = src.rows*src.cols;
+
+  for (int k = 0; k <= 255; k++) {
+    MT += k * (histogram[k] / (double) N);
+  }
+
+  for (int t1 = 0; t1 <= 255; t1++) {
+    W0K += histogram[t1] / (double) N;
+    M0K += t1 * (histogram[t1] / (double) N);
+    M0 = M0K / W0K;
+
+    W1K = 0;
+    M1K = 0;
+
+    for (int t2 = t1 + 1; t2 <= 255; t2++) {
+      W1K += histogram[t2] / (double) N;
+      M1K += t2 * (histogram[t2] / (double) N);
+      M1 = M1K / W1K;
+      W2K = 1 - (W0K + W1K);
+      M2K = MT - (M0K + M1K);
+
+      if (W2K <= 0)
+        break;
+
+      W2K = 0;
+      M2K = 0;
+
+      for (int t3 = t2 + 1; t3 <= 255; t3++) {
+        W2K += histogram[t3] / (double) N;
+        M2K += t3 * (histogram[t3] / (double) N);
+        M2 = M2K / W2K;
+        W3K = 1 - (W0K + W1K + W2K);
+        M3K = MT - (M0K + M1K + M2K);
+
+        M3 = M3K / W3K;
+        currVarB = W0K * (M0 - MT) * (M0 - MT) + W1K * (M1 - MT) * (M1 - MT) + W2K * (M2 - MT) * (M2 - MT) + W3K * (M3 - MT) * (M3 - MT);
+
+        if (maxBetweenVar < currVarB) {
+          maxBetweenVar = currVarB;
+          optimalThresh1 = t1;
+          optimalThresh2 = t2;
+        }
+      }
+    }
+  }
+
+  return std::make_tuple(optimalThresh1, optimalThresh2);
+}
 
 void
   core::gui::scripts::process::step_process(
   ) {
     if (_step != 2 and _step != 3)
       return;
+
+    auto pixels = _config->value("cm_pixels").value<float>();
 
     core::utils::image::image image = _image->clone();
 
@@ -138,18 +209,20 @@ void
       },
       -1
     );
-
+  
     cv::cvtColor(image, image, cv::COLOR_RGB2GRAY);
-    cv::threshold(image, image, 100, 255, cv::THRESH_BINARY);
+    
+    auto ths = _(image);
+    
+    cv::threshold(image, image, 0, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);
 
-    //
     cv::Mat edges;
     cv::Canny(
       image, edges,
-      _config->value("scanner/threshold_1").value<int>(),
-      _config->value("scanner/threshold_2").value<int>()
+      std::get<0>(ths), std::get<1>(ths)
     );
-    auto size = _config->value("scanner/fixer/ed_size").value<int>();
+
+    auto size = _config->value("scanner/fixer/dilate_size").value<int>();
     auto kernel = cv
       ::getStructuringElement(
         cv::MORPH_ELLIPSE,
@@ -157,6 +230,7 @@ void
         cv::Point(size, size)
       );
     cv::dilate(edges, edges, kernel);
+//    cv::erode(edges, edges, kernel);
 
     core::utils::image::contour_list contours;
     std::vector<std::vector<cv::Point>> contours_temp;
@@ -172,13 +246,14 @@ void
       contours.emplace_back(contour);
 
     _contours.clear();
+
     auto filter_min_area = _config->value("scanner/fixer/min_area").value<int>();
     auto filter_max_gap  = _config->value("scanner/fixer/max_gap").value<int>();
     auto filter_epsilon  = _config->value("scanner/fixer/epsilon").value<double>();
     //
     for (int contour_index = 0; contour_index < contours.size(); ++contour_index) {
       auto const& contour = contours[contour_index];
-      if (contour.area() < filter_min_area)
+      if (contour.area() / pixels / pixels < filter_min_area)
         continue;
 
       //

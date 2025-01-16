@@ -29,10 +29,6 @@
 #endif
 
 int main(int argc, char *argv[]) {
-//  qputenv("QSG_RENDER_LOOP", "basic");
-//  qDebug() << core::gui::scripts::registration::check_key("1CA5BEVBE6NGQP8J", "18B1B9");
-//  return 1;
-
   QApplication app(argc, argv);
 
 #ifdef SPLASH

@@ -23,8 +23,8 @@
       "default_iterations": 3
     },
     "fixer": {
-      "dilate_size": 3,
-      "min_area": 500,
+      "dilate_size": 1,
+      "min_area": 20,
       "max_gap": 10,
       "epsilon": 4
     }

@@ -60,10 +60,10 @@ QVariant
       set_recursive = [&](
         _p(cursor, QJsonObject)
       ) -> QJsonObject {
-        QString const& key = route.front(); route.pop_front();
+        QString key = route.front(); route.pop_front();
 
         cursor[key] = route.length()
-          ? set_recursive(cursor[key].toObject())
+          ? set_recursive(cursor.contains(key) ? cursor[key].toObject() : QJsonObject())
           : QJsonValue::fromVariant(value);
 
         return cursor;

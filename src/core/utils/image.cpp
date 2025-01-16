@@ -26,7 +26,7 @@ core::utils::image::image
 
     return cv
       ::imdecode(
-        cv::Mat(file.size(), 1, CV_8U,file.readAll().data()),
+        cv::Mat(file.size(), 1, CV_8U, file.readAll().data()),
         cv::IMREAD_COLOR
       );
   }

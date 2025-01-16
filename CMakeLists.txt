@@ -32,6 +32,8 @@ set(PROJECT_SOURCES
     src/core/utils/dxf.hpp
     src/core/utils/algebra.cpp
     src/core/utils/algebra.hpp
+    src/core/utils/hash.cpp
+    src/core/utils/hash.hpp
 
     src/core/gui/scripts/config.hpp
     src/core/gui/scripts/config.cpp
@@ -39,12 +41,14 @@ set(PROJECT_SOURCES
     src/core/gui/scripts/process.cpp
     src/core/gui/scripts/translator.hpp
     src/core/gui/scripts/translator.cpp
+    src/core/gui/scripts/registration.cpp
+    src/core/gui/scripts/registration.hpp
 
     src/core/gui/components/editor.hpp
     src/core/gui/components/editor.cpp
     src/core/gui/components/ruler.hpp
     src/core/gui/components/ruler.cpp
-        src/core/utils/hash.cpp src/core/utils/hash.hpp src/core/gui/scripts/registration.cpp src/core/gui/scripts/registration.hpp)
+)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL Release)
     add_executable(${PROJECT_NAME}

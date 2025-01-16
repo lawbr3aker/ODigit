@@ -5,6 +5,9 @@
 #include <QFileDialog>
 #include <QStandardPaths>
 
+#include <vector>
+#include <tuple>
+
 #include <dxflib/dl_dxf.h>
 
 #include <psimpl/psimpl.h>
