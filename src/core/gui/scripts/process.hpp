@@ -74,13 +74,15 @@ namespace core::gui::scripts {
    public:
     _p(active, bool);
 
-   public:
+   private:
     _p(_editor, gui::components::editor *) = nullptr;
     _p(_config, gui::scripts::config *) = nullptr;
     _p(_image , std::unique_ptr<utils::image::image>) = nullptr;
     _p(_step  , int);
 
     _p(_contours, utils::polygon::polygon_list);
+
+    _p(_size, cv::Size2f);
   };
 }
 

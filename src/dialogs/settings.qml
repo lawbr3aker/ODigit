@@ -229,32 +229,6 @@ ControlsV1.ApplicationWindow {
                             }
 
                             Row {
-                                spacing: 50
-                                Layout.fillWidth: true
-                                layoutDirection: window.direction
-
-                                Components_Controls.Spinbox {
-                                    id: detectorThreshold1
-                                    layoutDirection: window.direction
-
-                                    title.text: translator.global.tr('L2YP')
-                                    input.implicitWidth: 100
-
-                                    input.onValueChanged: tabs.inputsChanged()
-                                }
-
-                                Components_Controls.Spinbox {
-                                    id: detectorThreshold2
-                                    layoutDirection: window.direction
-
-                                    title.text: translator.global.tr('P4PL')
-                                    input.implicitWidth: 100
-
-                                    input.onValueChanged: tabs.inputsChanged()
-                                }
-                            }
-
-                            Row {
                                 spacing: 60
                                 Layout.fillWidth: true
                                 layoutDirection: window.direction
@@ -401,8 +375,6 @@ ControlsV1.ApplicationWindow {
                 mainPlaneWidth    .input.value = config.global.value('plane_width')
                 mainPlaneHeight   .input.value = config.global.value('plane_height')
                 mainCMPixels      .input.value = config.global.value('cm_pixels')
-                detectorThreshold1.input.value = config.global.value('scanner/threshold_1')
-                detectorThreshold2.input.value = config.global.value('scanner/threshold_2')
                 detectorEDSize    .input.value = config.global.value('scanner/fixer/dilate_size')
                 stabilizerBlurSize.input.value = config.global.value('scanner/blur_size')
                 fixerMinArea      .input.value = config.global.value('scanner/fixer/min_area')
@@ -421,8 +393,6 @@ ControlsV1.ApplicationWindow {
                 config.global.set('plane_width'                             , mainPlaneWidth            .input.value)
                 config.global.set('plane_height'                            , mainPlaneHeight           .input.value)
                 config.global.set('cm_pixels'                               , mainCMPixels              .input.value)
-                config.global.set('scanner/threshold_1'                     , detectorThreshold1        .input.value)
-                config.global.set('scanner/threshold_2'                     , detectorThreshold2        .input.value)
                 config.global.set('scanner/fixer/dilate_size'               , detectorEDSize            .input.value)
                 config.global.set('scanner/blur_size'                       , stabilizerBlurSize        .input.value)
                 config.global.set('scanner/fixer/min_area'                  , fixerMinArea              .input.value)

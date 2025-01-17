@@ -15,8 +15,6 @@
   },
   "scanner": {
     "blur_size": 1,
-    "threshold_1": 100,
-    "threshold_2": 100,
     "simplify": {
       "default_threshold_a": 5,
       "default_threshold_b": 18,

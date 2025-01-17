@@ -66,10 +66,17 @@ void
 
 void
   core::gui::components::editor::set_image(
-    _p(image, core::utils::image::image *)
+    _p(image, core::utils::image::image *),
+    _p(w, float),
+    _p(h, float)
   ) {
     cv::Mat temp;
-    cvtColor(*image, temp,cv::COLOR_BGR2RGB);
+    cv::Size2f
+      size {
+        w, h
+      };
+    cvtColor(*image, temp, cv::COLOR_BGR2RGB);
+    cv::resize(temp, temp, size);
     QImage final((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888);
     final.bits();
 

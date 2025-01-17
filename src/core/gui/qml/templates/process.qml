@@ -83,6 +83,7 @@ Scripts.Process {
 
             onZoomChanged: {
                 const pixels = root.config.value('cm_pixels', 'int')
+                console.log(pixels, zoom, zoom * pixels)
 
                 rulerV.unit_pixels = zoom * pixels
                 rulerH.unit_pixels = zoom * pixels

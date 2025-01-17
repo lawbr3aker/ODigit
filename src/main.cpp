@@ -45,13 +45,15 @@ int main(int argc, char *argv[]) {
   QApplication::addLibraryPath(".");
   QApplication::setStyle(QStyleFactory::create("Fusion"));
   //
-  qmlRegisterType<core::gui::components::editor> ("scripts", 1, 0, "Editor");
-  qmlRegisterType<core::gui::components::ruler>  ("scripts", 1, 0, "Ruler");
+  qmlRegisterType<core::gui::components::editor>   ("scripts", 1, 0, "Editor");
+  qmlRegisterType<core::gui::components::ruler>    ("scripts", 1, 0, "Ruler");
   //
   qmlRegisterType<core::gui::scripts::process>     ("scripts", 1, 0, "Process");
   qmlRegisterType<core::gui::scripts::config>      ("scripts", 1, 0, "Config");
   qmlRegisterType<core::gui::scripts::translator>  ("scripts", 1, 0, "Translator");
   qmlRegisterType<core::gui::scripts::registration>("scripts", 1, 0, "Registration");
+
+  qRegisterMetaType<core::gui::components::editor_elements::segment *>("core::gui::components::editor_elements::segment *");
 
   _p(format, QSurfaceFormat);
      format.setSwapInterval(0);

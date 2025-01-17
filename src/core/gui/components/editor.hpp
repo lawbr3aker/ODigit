@@ -255,7 +255,9 @@ namespace core::gui::components {
    public:
     void
       set_image(
-        _p(image, core::utils::image::image *)
+        _p(image, core::utils::image::image *),
+        _p(w, float),
+        _p(h, float)
       );
 
     Q_INVOKABLE

@@ -1,5 +1,7 @@
 #include "./process.hpp"
 
+#define RES 4000.f
+
 core::gui::components::editor *
   core::gui::scripts::process::set_editor(
     _p(value, core::gui::components::editor *)
@@ -94,15 +96,15 @@ void
 
     auto pixels = _config->value("cm_pixels").value<float>();
     //
-    cv::Size2f
+    QSizeF
       size {
-        _config->value("plane_width").value<float>(),
-        _config->value("plane_height").value<float>()
+        (float) _image->cols,
+        (float) _image->rows
       },
-      size_warped {
-        size.width  * pixels,
-        size.height * pixels,
-      };
+      size_warped = size * (RES / std::max(size.width(), size.height()));
+
+    _size.width = (float) size_warped.width();
+    _size.height = (float) size_warped.height();
 
     std::vector<cv::Point2f>
       corners {
@@ -112,19 +114,23 @@ void
         *corner_bl,
       },
       corners_warped{
-        {0                , 0},
-        {size_warped.width, 0},
-        {size_warped.width, size_warped.height},
-        {0                , size_warped.height},
+        {0          , 0},
+        {_size.width, 0},
+        {_size.width, _size.height},
+        {0          , _size.height},
       };
 
     auto warp_matrix = cv::getPerspectiveTransform(corners, corners_warped);
 
-    cv::warpPerspective(*_image, *_image, warp_matrix, size_warped);
+    cv::warpPerspective(*_image, *_image, warp_matrix, _size);
 
     _step = 2;
 
-    _editor->set_image(&*_image);
+    _editor->set_image(
+      &*_image,
+      _config->value("plane_width").value<float>() * pixels,
+      _config->value("plane_height").value<float>() * pixels
+      );
     _editor->home();
   }
 
@@ -197,7 +203,9 @@ void
     if (_step != 2 and _step != 3)
       return;
 
-    auto pixels = _config->value("cm_pixels").value<float>();
+    auto pixels  = _config->value("cm_pixels").value<float>();
+    auto scale_w = _config->value("plane_width").value<float>() / (_size.width / pixels);
+    auto scale_h = _config->value("plane_height").value<float>() / (_size.height / pixels);
 
     core::utils::image::image image = _image->clone();
 
@@ -230,7 +238,7 @@ void
         cv::Point(size, size)
       );
     cv::dilate(edges, edges, kernel);
-//    cv::erode(edges, edges, kernel);
+    cv::erode(edges, edges, kernel);
 
     core::utils::image::contour_list contours;
     std::vector<std::vector<cv::Point>> contours_temp;
@@ -284,11 +292,12 @@ void
         );
         //
         auto & contour_final = _contours.emplace_back();
-        for (auto const &point: fixed)
+        for (auto const &point: fixed) {
           contour_final.push_back({
-            (float) point.x,
-            (float) point.y
+            (float) point.x * scale_w,
+            (float) point.y * scale_h,
           });
+        }
       }
     }
 
