@@ -8,7 +8,7 @@
 
 [Setup]
 AppId={{B9463A91-0A6F-46E8-A0FC-BE94BB64AE64}
-AppName={#MyAppName}
+AppName={#MyAppName} {#MyAppVersion}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}/{#MyAppName}
@@ -42,6 +42,9 @@ WelcomeLabel2=Thank you for choosing our software.
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags:
 Name: "programsicon"; Description: "Add to start menu"; GroupDescription: "{cm:AdditionalIcons}"; Flags:
+
+[InstallDelete]
+Type: files; Name: "{userappdata}/Optitex Pattern Design/ODigit/config.json"
 
 [Files]
 Source: "E:/Qt/ODigit/build/{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
@@ -89,7 +92,7 @@ Source: "E:/Qt/ODigit/build/platforms/*"; DestDir: "{app}/platforms"; Flags: ign
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}/{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"; Tasks: programsicon
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}/{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"; Tasks: desktopicon
 Name: "{group}\{#MyAppName}"; Filename: "{app}/{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"
-Name: "{group}\Uninstall  {#MyAppName}"; Filename: "{app}/{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"
+Name: "{group}\Uninstall {#MyAppName}"; Filename: "{app}/{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{app}/{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"
 
 [Run]

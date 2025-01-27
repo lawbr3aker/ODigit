@@ -34,7 +34,9 @@ Scripts.Editor {
 
             const deleteCallbacks = []
             for (const callback of root.callbacks) {
-                if (callback(ctx, root.pan.x, root.pan.y, root.zoom) !== true)
+                const result = callback(ctx, root.pan.x, root.pan.y, root.zoom)
+
+                if (result !== true)
                     deleteCallbacks.push(callback)
             }
 
@@ -59,6 +61,8 @@ Scripts.Editor {
 
         anchors.fill: parent
 
+        signal keyChanged(int key, int state)
+
         readonly property int cursorDefault: Qt.CrossCursor
         readonly property int cursorHover  : Qt.OpenHandCursor
 
@@ -81,7 +85,7 @@ Scripts.Editor {
 
             cursorShape: cursorDefault
            hoverEnabled: true
-        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
 
         function checkPoint(point, lx, ly, rx, ry) {
             return lx <= point.x && point.x <= rx && ly <= point.y && point.y <= ry
@@ -226,28 +230,28 @@ Scripts.Editor {
         onPressed: {
             input.keys[mouse.button] = true
 
-            onKeysChanged(mouse.button, true)
+            keyChanged(mouse.button, true)
         }
 
         onReleased: {
             delete input.keys[mouse.button]
 
-            onKeysChanged(mouse.button, false)
+            keyChanged(mouse.button, false)
         }
 
         Keys.onPressed: {
             input.keys[event.key] = true
 
-            onKeysChanged(event.key, true)
+            keyChanged(event.key, true)
         }
 
         Keys.onReleased: {
             delete input.keys[event.key]
 
-            onKeysChanged(event.key, false)
+            keyChanged(event.key, false)
         }
 
-        function onKeysChanged(key, active) {
+        onKeyChanged: function (key, active) {
             if (active) {
                 switch (key) {
                     case Qt.LeftButton: {
@@ -264,7 +268,7 @@ Scripts.Editor {
                                 activePoints.push(hoveredPoint)
                                 hoveredPoint.status = 'active'
 
-                                onKeysChanged.selected = true
+                                onKeyChanged.selected = true
                             }
                         } else if (!keys[Qt.Key_Shift] && !root.status['hovered']) {
                             for (const point of activePoints)
@@ -284,7 +288,7 @@ Scripts.Editor {
                                 activeSegments.push(hoveredSegment)
                                 hoveredSegment.status = 'active'
 
-                                onKeysChanged.selected = true
+                                onKeyChanged.selected = true
                             }
                         } else if (!keys[Qt.Key_Shift] && !root.status['hovered']) {
                             for (const segment of activeSegments)
@@ -312,7 +316,7 @@ Scripts.Editor {
                         root.update()
                     } break
                     case Qt.LeftButton: {
-                        if (hoveredPoint && !onKeysChanged.selected && !root.status['moving']) {
+                        if (hoveredPoint && !onKeyChanged.selected && !root.status['moving']) {
                             if (activePoints.includes(hoveredPoint)) {
                                 if (keys[Qt.Key_Shift]) {
                                     activePoints.splice(activePoints.indexOf(hoveredPoint), 1)
@@ -326,7 +330,7 @@ Scripts.Editor {
                                 }
                             }
                         }
-                        if (hoveredSegment && !onKeysChanged.selected && !root.status['moving']) {
+                        if (hoveredSegment && !onKeyChanged.selected && !root.status['moving']) {
                             if (activeSegments.includes(hoveredSegment)) {
                                 if (keys[Qt.Key_Shift]) {
                                     activeSegments.splice(activeSegments.indexOf(hoveredSegment), 1)
@@ -345,14 +349,16 @@ Scripts.Editor {
                         root.status['moving'] = false
                         root.status['selected'] = false
 
-                        onKeysChanged.selected = false
+                        onKeyChanged.selected = false
                     }
                 }
             }
 
             const deleteCallbacks = []
             for (const callback of input.callbacks) {
-                if (callback(key, active) !== true)
+                const result = callback(key, active)
+
+                if (result !== true)
                     deleteCallbacks.push(callback)
             }
 

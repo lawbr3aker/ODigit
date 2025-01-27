@@ -4,6 +4,7 @@ import QtQuick.Controls 1.3 as ControlsV1
 import QtQuick.Controls 2.15
 import QtQuick.Dialogs 1.3
 import QtQuick.Controls.Styles 1.4
+import QtQml 2.15
 
 import "qrc:Dialogs" as Dialogs
 import "qrc:/Components/Controls" as Components_Controls
@@ -120,12 +121,24 @@ ControlsV1.ApplicationWindow {
                     width: parent.width
 
                     Components_Templates_Toolbar.Side {
+                        id: sidebar
+
                         parent: tabSide.container
                         anchors.fill: parent
                         width: parent.width
                         anchors.margins: 5
 
                         window: window
+
+                        Connections {
+                            target: window.currentProcess.editor.input
+
+                            function onKeyChanged(key, state) {
+                                if ((key === Qt.RightButton || key === Qt.Key_Escape) && state === 0) {
+                                    sidebar.resetAll()
+                                }
+                            }
+                        }
                     }
                 }
 

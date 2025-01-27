@@ -16,12 +16,13 @@ ColumnLayout {
         id: translator
     }
 
-    function resetAll(select) {
-        if (select)
-            toolSelect.enable = false
+    function resetAll() {
         toolMeasure.enable = false
         toolPoint  .enable = false
         toolLine   .enable = false
+        toolAddText.enable = false
+        //
+        toolSelect .enable = true
     }
 
     Components_Controls.Button {
@@ -41,10 +42,8 @@ ColumnLayout {
         }
 
         onClicked: {
-            if (!enable) {
-                resetAll()
-                enable = true
-            }
+            resetAll()
+            enable = true
         }
 
         onEnableChanged: {
@@ -52,8 +51,8 @@ ColumnLayout {
                 delete callback.s
                 callback.active = false
             } else {
-                window.currentProcess.editor.input.callbacks = []
-                window.currentProcess.editor.input.callbacks.push(callback)
+                if (!window.currentProcess.editor.input.callbacks.includes(callback))
+                    window.currentProcess.editor.input.callbacks.push(callback)
             }
         }
 
@@ -140,10 +139,10 @@ ColumnLayout {
                         }
 
                         window.currentProcess.editor.update()
-
-                        toolSelect.enable = false
-                        toolSelect.enable = true
                     }
+
+                    delete callback.s
+                    callback.active = false
                 }
             }
 
@@ -218,7 +217,8 @@ ColumnLayout {
                 resetAll(true)
                 enable = true
 
-                window.currentProcess.editor.input.callbacks.push(callback)
+                if (!window.currentProcess.editor.input.callbacks.includes(callback))
+                    window.currentProcess.editor.input.callbacks.push(callback)
             }
         }
 
@@ -255,8 +255,37 @@ ColumnLayout {
             if (!enable) {
                 resetAll(true)
                 enable = true
+            }
+        }
 
-                window.currentProcess.editor.input.callbacks.push(callback)
+        onEnableChanged: {
+            if (!enable) {
+                delete callback.s
+            } else {
+                if (!window.currentProcess.editor.input.callbacks.includes(callback))
+                    window.currentProcess.editor.input.callbacks.push(callback)
+
+                window.currentProcess.editor.callbacks.push(
+                    function ruler(ctx, px, py, z) {
+                        if (!toolLine.enable)
+                            return
+
+                        if (!callback.s)
+                            return true
+
+                        const x = (window.currentProcess.editor.input.mouseX - px) / z
+                        const y = (window.currentProcess.editor.input.mouseY - py) / z
+
+                        ctx.lineWidth   = 3
+                        ctx.strokeStyle = "#37AD76"
+                        ctx.beginPath()
+                        ctx.moveTo(callback.s.x * z + px, callback.s.y * z + py)
+                        ctx.lineTo(x * z + px, y * z + py)
+                        ctx.stroke()
+
+                        return true
+                    }
+                )
             }
         }
 
@@ -300,17 +329,8 @@ ColumnLayout {
         property bool enable: false
 
         onClicked: {
-            if (!enable) {
-                resetAll(true)
-                enable = true
-
-                callback.active = true
-                window.currentProcess.editor.input.callbacks.push(callback)
-            } else {
-                delete callback.s
-                callback.alive = false
-                callback.active = true
-            }
+            resetAll()
+            enable = true
         }
 
         onEnableChanged: {
@@ -318,19 +338,26 @@ ColumnLayout {
                 delete callback.s
                 callback.alive = false
                 callback.active = false
+            } else {
+                if (!window.currentProcess.editor.input.callbacks.includes(callback))
+                    window.currentProcess.editor.input.callbacks.push(callback)
             }
         }
 
         function callback(key, active) {
+            if (!toolMeasure.enable)
+                return
+
             if (key === Qt.LeftButton && active) {
                 if (callback.alive) {
-                    callback.active = true
-                    callback.alive = false
-
                     delete callback.s
+
+                    callback.alive = false
                 }
+
                 if (!callback.s) {
                     callback.alive = false
+                    callback.active = true
 
                     callback.s = {
                         x: (window.currentProcess.editor.input.mouseX - window.currentProcess.editor.pan.x) / window.currentProcess.editor.zoom,
@@ -395,7 +422,7 @@ ColumnLayout {
                 }
             }
 
-            return toolMeasure.enable
+            return true
         }
     }
 
@@ -447,9 +474,6 @@ ColumnLayout {
             if (!enable) {
                 resetAll()
                 enable = true
-
-                window.currentProcess.editor.input.callbacks.push(callback)
-            } else {
             }
         }
 
@@ -458,6 +482,9 @@ ColumnLayout {
                 delete callback.s
                 callback.alive = false
                 callback.active = false
+            } else {
+                if (!window.currentProcess.editor.input.callbacks.includes(callback))
+                    window.currentProcess.editor.input.callbacks.push(callback)
             }
         }
 
@@ -500,6 +527,7 @@ ColumnLayout {
                     )
                 } else {
                     callback.active = false
+                    console.log("aded")
 
                     const sx = callback.s.x, sy = callback.s.y,
                           ex = callback.e.x, ey = callback.e.y
@@ -547,6 +575,7 @@ ColumnLayout {
                     )
                 }
             }
+            console.log("returne", toolAddText.enable)
 
             return toolAddText.enable
         }

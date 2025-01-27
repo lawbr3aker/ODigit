@@ -58,6 +58,9 @@ void
     if (_step != 1)
       return;
 
+    if (_config->value("plane_width").value<float>() == 0 or _config->value("plane_height").value<float>() == 0)
+      return;
+
     cv::Mat temp;
     cv::cvtColor(*_image, temp, cv::COLOR_BGR2GRAY);
 
@@ -124,14 +127,14 @@ void
 
     cv::warpPerspective(*_image, *_image, warp_matrix, _size);
 
-    _step = 2;
-
     _editor->set_image(
       &*_image,
       _config->value("plane_width").value<float>() * pixels,
       _config->value("plane_height").value<float>() * pixels
       );
     _editor->home();
+
+    _step = 2;
   }
 
 std::tuple<int, int> _(cv::Mat const& src) {
