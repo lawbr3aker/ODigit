@@ -1,5 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.15
 import QtQuick.Dialogs 1.3
 
 import "qrc:Components/Controls" as Components_Controls
@@ -30,12 +31,13 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: width
 
-        icon.source: 'qrc:Assets/Images/Icons/cursor'
-        icon.parent.height: width
-        icon.parent.anchors.margins: 6
+        icn.source: 'qrc:Assets/Images/Icons/cursor'
+        icn.parent.height: width
+        icn.parent.anchors.margins: 6
         hint.text: translator.global.tr('29aj')
 
         property bool enable: false
+        property bool selecting: false
 
         Component.onCompleted: {
             enable = true
@@ -85,6 +87,8 @@ ColumnLayout {
                                     h: Math.abs(callback.e.y - callback.s.y)
                                 }
 
+                                toolSelect.selecting = callback.size.w > 0 && callback.size.h > 0
+
                                 ctx.strokeStyle = "#FF0000"
 
                                 ctx.lineWidth = 2
@@ -102,6 +106,8 @@ ColumnLayout {
                         )
                     }
                 } else {
+                    //toolSelect.selecting = false
+
                     if (callback.active) {
                         callback.active = false
 
@@ -154,9 +160,9 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: width
 
-        icon.source: 'qrc:Assets/Images/Icons/home'
-        icon.parent.height: width
-        icon.parent.anchors.margins: 6
+        icn.source: 'qrc:Assets/Images/Icons/home'
+        icn.parent.height: width
+        icn.parent.anchors.margins: 6
         hint.text: translator.global.tr('4jdn')
 
         onClicked: {
@@ -170,9 +176,9 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: width
 
-        icon.source: 'qrc:Assets/Images/Icons/zoom-in'
-        icon.parent.height: width
-        icon.parent.anchors.margins: 6
+        icn.source: 'qrc:Assets/Images/Icons/zoom-in'
+        icn.parent.height: width
+        icn.parent.anchors.margins: 6
         hint.text: translator.global.tr('Oi20')
 
         onClicked: {
@@ -187,9 +193,9 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: width
 
-        icon.source: 'qrc:Assets/Images/Icons/zoom-out'
-        icon.parent.height: width
-        icon.parent.anchors.margins: 6
+        icn.source: 'qrc:Assets/Images/Icons/zoom-out'
+        icn.parent.height: width
+        icn.parent.anchors.margins: 6
         hint.text: translator.global.tr('Oi21')
 
         onClicked: {
@@ -205,9 +211,9 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: width
 
-        icon.source: 'qrc:Assets/Images/Icons/point'
-        icon.parent.height: width
-        icon.parent.anchors.margins: 6
+        icn.source: 'qrc:Assets/Images/Icons/point'
+        icn.parent.height: width
+        icn.parent.anchors.margins: 6
         hint.text: translator.global.tr('Oi22')
 
         property bool enable: false
@@ -222,11 +228,17 @@ ColumnLayout {
             }
         }
 
+        onEnableChanged: {
+            if (enabled) {
+            } else {
+            }
+        }
+
         function callback(key, active) {
             if (!toolPoint.enable)
                 return
 
-            if (key === Qt.LeftButton && active && !window.currentProcess.editor.status['selected']) {
+            if (key === Qt.LeftButton && !active && !window.currentProcess.editor.status['selected'] && !toolSelect.selecting) {
                 const x = (window.currentProcess.editor.input.mouseX - window.currentProcess.editor.pan.x) / window.currentProcess.editor.zoom
                 const y = (window.currentProcess.editor.input.mouseY - window.currentProcess.editor.pan.y) / window.currentProcess.editor.zoom
 
@@ -244,16 +256,17 @@ ColumnLayout {
         Layout.      fillWidth: true
         Layout.preferredHeight: width
 
-        icon.source: 'qrc:Assets/Images/Icons/line'
-        icon.parent.height: width
-        icon.parent.anchors.margins: 6
+        icn.source: 'qrc:Assets/Images/Icons/line'
+        icn.parent.height: width
+        icn.parent.anchors.margins: 6
         hint.text: translator.global.tr('Oi23')
 
         property bool enable: false
 
         onClicked: {
             if (!enable) {
-                resetAll(true)
+                resetAll()
+                toolSelect.enable = false
                 enable = true
             }
         }
@@ -321,15 +334,16 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: width
 
-        icon.source: 'qrc:Assets/Images/Icons/measure'
-        icon.parent.height: width
-        icon.parent.anchors.margins: 6
+        icn.source: 'qrc:Assets/Images/Icons/measure'
+        icn.parent.height: width
+        icn.parent.anchors.margins: 6
         hint.text: translator.global.tr('Oi24')
 
         property bool enable: false
 
         onClicked: {
             resetAll()
+            toolSelect.enable = false
             enable = true
         }
 
@@ -463,9 +477,9 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: width
 
-        icon.source: 'qrc:Assets/Images/Icons/text'
-        icon.parent.height: width
-        icon.parent.anchors.margins: 6
+        icn.source: 'qrc:Assets/Images/Icons/text'
+        icn.parent.height: width
+        icn.parent.anchors.margins: 6
         hint.text: translator.global.tr('Oi25')
 
         property bool enable: false

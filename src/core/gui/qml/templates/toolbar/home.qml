@@ -42,8 +42,8 @@ RowLayout {
                 Layout.preferredWidth: 75
 
                 title. text: translator.global.tr('M9sY')
-                icon.source: 'qrc:Assets/Images/Icons/open-file'
-                icon.parent.height: 40
+                icn.source: 'qrc:Assets/Images/Icons/open-file'
+                icn.parent.height: 40
 
                 onClicked: {
                     window.currentProcess.step_path()
@@ -63,8 +63,8 @@ RowLayout {
                 Layout.preferredWidth: 55
 
                 title. text: translator.global.tr('N2cU')
-                icon.source: 'qrc:Assets/Images/Icons/save-file'
-                icon.parent.height: 40
+                icn.source: 'qrc:Assets/Images/Icons/save-file'
+                icn.parent.height: 40
             }
         }
 
@@ -103,8 +103,8 @@ RowLayout {
                 Layout.preferredWidth: 75
 
                 title. text: translator.global.tr('H6eV')
-                icon.source: 'qrc:Assets/Images/Icons/render'
-                icon.parent.height: 40
+                icn.source: 'qrc:Assets/Images/Icons/render'
+                icn.parent.height: 40
 
                 onClicked: {
                     window.currentProcess.step_process()
@@ -142,8 +142,8 @@ RowLayout {
                 Layout.preferredWidth: 75
 
                 title. text: translator.global.tr('DSe1')
-                icon.source: 'qrc:Assets/Images/Icons/compress'
-                icon.parent.height: 40
+                icn.source: 'qrc:Assets/Images/Icons/compress'
+                icn.parent.height: 40
 
                 onClicked: {
                     simplifyDialog.a.text  = window.currentProcess.config.value('scanner/simplify/default_threshold_a')
@@ -160,8 +160,8 @@ RowLayout {
                 Layout.preferredWidth: 65
 
                 title. text: translator.global.tr('D5hY')
-                icon.source: 'qrc:Assets/Images/Icons/dxf'
-                icon.parent.height: 40
+                icn.source: 'qrc:Assets/Images/Icons/dxf'
+                icn.parent.height: 40
 
                 onClicked: {
                     window.currentProcess.step_export_dxf()
@@ -202,8 +202,8 @@ RowLayout {
                 Layout.preferredWidth: 65
 
                 title. text: translator.global.tr('Q8kB')
-                icon.source: 'qrc:Assets/Images/Icons/setting'
-                icon.parent.height: 40
+                icn.source: 'qrc:Assets/Images/Icons/setting'
+                icn.parent.height: 40
 
                 onClicked: {
                     settings.show()
@@ -215,8 +215,8 @@ RowLayout {
                 Layout.preferredWidth: 55
 
                  title.text: translator.global.tr('T2lC')
-                icon.source: 'qrc:Assets/Images/Icons/about'
-                icon.parent.height: 40
+                icn.source: 'qrc:Assets/Images/Icons/about'
+                icn.parent.height: 40
 
                 onClicked: {
                     about.show()

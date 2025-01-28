@@ -3,14 +3,35 @@ import QtQuick.Controls 1.2 as ControlsV1
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
-ControlsV1.Button {
+Button {
   id: root
 
   implicitHeight: 34
 
-  readonly property alias icon : icon
+  readonly property alias icn: icon
   readonly property alias title: title
   readonly property alias hint : hint
+
+  background: Rectangle {
+    id: background
+
+    property string bg: ""
+    property string bd: ""
+
+    radius: 3
+
+    border {
+      color: bd ? bd : "#ababab"
+      width: 1
+    }
+
+    color: bg ? bg : (root.hovered ? "#c4c4c4" : "#efefef")
+
+    gradient: Gradient {
+      GradientStop { position: 0.0; color: Qt.lighter(background.color, 1.2) }
+      GradientStop { position: 1.0; color: background.color }
+    }
+  }
 
   ColumnLayout {
     anchors.fill: parent
