@@ -6,11 +6,18 @@ import QtQuick.Dialogs 1.3
 
 ControlsV1.ApplicationWindow {
     title: "About"
+    
+    property var globalW
 
      minimumWidth: 280
      maximumWidth: minimumWidth
     minimumHeight: description.height + banner.height
     maximumHeight: minimumHeight
+
+    Rectangle {
+        anchors.fill: parent
+        color: globalW.globalThemes.value('colors/IlPR')
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -21,7 +28,7 @@ ControlsV1.ApplicationWindow {
 
             Layout.      alignment: Qt.AlignHCenter
             Layout.      fillWidth: true
-            Layout.preferredHeight: 180
+            Layout.preferredHeight: 210
 
             Image {
                 Layout.      alignment: Qt.AlignHCenter
@@ -34,8 +41,10 @@ ControlsV1.ApplicationWindow {
 
             Text {
                 Layout.topMargin: 10
+                Layout.bottomMargin: 10
 
-                               text: translator.global.tr('UlcH')
+                              color: globalW.globalThemes.value('colors/GFeV')
+                               text: globalW.globalTranslator.tr('UlcH')
                      font.pixelSize: 16
                 horizontalAlignment: Text.AlignHCenter
             }
@@ -45,6 +54,8 @@ ControlsV1.ApplicationWindow {
             Layout. fillWidth: true
             Layout.fillHeight: true
 
+            color: globalW.globalThemes.value('colors/uK6i')
+
             Text {
                 id: description
 
@@ -52,7 +63,8 @@ ControlsV1.ApplicationWindow {
                 anchors.centerIn: parent
                          padding: 17
 
-                          text: translator.global.tr('MV2O')
+                         color: globalW.globalThemes.value('colors/GFeV')
+                          text: globalW.globalTranslator.tr('MV2O')
                     textFormat: Text.RichText
                       wrapMode: Text.WordWrap
                 font.pixelSize: 14

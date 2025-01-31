@@ -9,13 +9,10 @@ import "qrc:Components/Dialogs/Helpers" as Components_Dialogs_Helpers
 import scripts 1.0
 
 ColumnLayout {
-    property var window
+    property var globalW
 
     spacing: 5
 
-    Translator {
-        id: translator
-    }
 
     function resetAll() {
         toolMeasure.enable = false
@@ -34,7 +31,7 @@ ColumnLayout {
         icn.source: 'qrc:Assets/Images/Icons/cursor'
         icn.parent.height: width
         icn.parent.anchors.margins: 6
-        hint.text: translator.global.tr('29aj')
+        hint.text: globalW.globalTranslator.tr('29aj')
 
         property bool enable: false
         property bool selecting: false
@@ -53,8 +50,8 @@ ColumnLayout {
                 delete callback.s
                 callback.active = false
             } else {
-                if (!window.currentProcess.editor.input.callbacks.includes(callback))
-                    window.currentProcess.editor.input.callbacks.push(callback)
+                if (!globalW.currentProcess.editor.input.callbacks.includes(callback))
+                    globalW.currentProcess.editor.input.callbacks.push(callback)
             }
         }
 
@@ -62,24 +59,24 @@ ColumnLayout {
             if (!toolSelect.enable)
                 return
 
-            if (key === Qt.LeftButton && !window.currentProcess.editor.status['selected']) {
+            if (key === Qt.LeftButton && !globalW.currentProcess.editor.status['selected']) {
                 if (active) {
                     if (!callback.s) {
                         callback.s = {
-                            x: window.currentProcess.editor.input.mouseRealX,
-                            y: window.currentProcess.editor.input.mouseRealY
+                            x: globalW.currentProcess.editor.input.mouseRealX,
+                            y: globalW.currentProcess.editor.input.mouseRealY
                         }
 
                         callback.active = true
 
-                        window.currentProcess.editor.callbacks.push(
+                        globalW.currentProcess.editor.callbacks.push(
                             function rect(ctx, px, py, z) {
                                 if (!callback.active)
                                     return
 
                                 callback.e = {
-                                    x: window.currentProcess.editor.input.mouseRealX,
-                                    y: window.currentProcess.editor.input.mouseRealY
+                                    x: globalW.currentProcess.editor.input.mouseRealX,
+                                    y: globalW.currentProcess.editor.input.mouseRealY
                                 }
 
                                 callback.size = {
@@ -94,10 +91,10 @@ ColumnLayout {
                                 ctx.lineWidth = 2
                                 ctx.beginPath()
                                 ctx.strokeRect(
-                                    Math.min(callback.s.x, callback.e.x) * window.currentProcess.editor.zoom + window.currentProcess.editor.pan.x,
-                                    Math.min(callback.s.y, callback.e.y) * window.currentProcess.editor.zoom + window.currentProcess.editor.pan.y,
-                                    callback.size.w * window.currentProcess.editor.zoom,
-                                    callback.size.h * window.currentProcess.editor.zoom
+                                    Math.min(callback.s.x, callback.e.x) * globalW.currentProcess.editor.zoom + globalW.currentProcess.editor.pan.x,
+                                    Math.min(callback.s.y, callback.e.y) * globalW.currentProcess.editor.zoom + globalW.currentProcess.editor.pan.y,
+                                    callback.size.w * globalW.currentProcess.editor.zoom,
+                                    callback.size.h * globalW.currentProcess.editor.zoom
                                 )
                                 ctx.stroke()
 
@@ -111,40 +108,40 @@ ColumnLayout {
                     if (callback.active) {
                         callback.active = false
 
-                        for (const point of window.currentProcess.editor.points) {
-                            if (window.currentProcess.editor.input.checkPoint(
+                        for (const point of globalW.currentProcess.editor.points) {
+                            if (globalW.currentProcess.editor.input.checkPoint(
                                     point,
                                     Math.min(callback.s.x, callback.e.x), Math.min(callback.s.y, callback.e.y),
                                     Math.max(callback.s.x, callback.e.x), Math.max(callback.s.y, callback.e.y),
                                 )) {
-                                if (!window.currentProcess.editor.input.activePoints.includes(point)) {
+                                if (!globalW.currentProcess.editor.input.activePoints.includes(point)) {
                                     point.status = 'active'
-                                    window.currentProcess.editor.input.activePoints.push(point)
+                                    globalW.currentProcess.editor.input.activePoints.push(point)
                                 }
                             }
                         }
 
-                        for (const polyline of window.currentProcess.editor.polylines) {
+                        for (const polyline of globalW.currentProcess.editor.polylines) {
                             for (const segment of polyline.segments) {
                                 const midpoint = {
                                     x: (segment.s.x + segment.e.x) / 2,
                                     y: (segment.s.y + segment.e.y) / 2
                                 }
 
-                                if (window.currentProcess.editor.input.checkPoint(
+                                if (globalW.currentProcess.editor.input.checkPoint(
                                         midpoint,
                                         Math.min(callback.s.x, callback.e.x), Math.min(callback.s.y, callback.e.y),
                                         Math.max(callback.s.x, callback.e.x), Math.max(callback.s.y, callback.e.y),
                                     )) {
-                                    if (!window.currentProcess.editor.input.activeSegments.includes(segment)) {
+                                    if (!globalW.currentProcess.editor.input.activeSegments.includes(segment)) {
                                         segment.status = 'active'
-                                        window.currentProcess.editor.input.activeSegments.push(segment)
+                                        globalW.currentProcess.editor.input.activeSegments.push(segment)
                                     }
                                 }
                             }
                         }
 
-                        window.currentProcess.editor.update()
+                        globalW.currentProcess.editor.update()
                     }
 
                     delete callback.s
@@ -163,12 +160,12 @@ ColumnLayout {
         icn.source: 'qrc:Assets/Images/Icons/home'
         icn.parent.height: width
         icn.parent.anchors.margins: 6
-        hint.text: translator.global.tr('4jdn')
+        hint.text: `${globalW.globalTranslator.tr('4jdn')}`
 
         onClicked: {
             resetAll()
-            window.currentProcess.editor.home()
-            window.currentProcess.editor.update()
+            globalW.currentProcess.editor.home()
+            globalW.currentProcess.editor.update()
         }
     }
 
@@ -179,13 +176,13 @@ ColumnLayout {
         icn.source: 'qrc:Assets/Images/Icons/zoom-in'
         icn.parent.height: width
         icn.parent.anchors.margins: 6
-        hint.text: translator.global.tr('Oi20')
+        hint.text: `${globalW.globalTranslator.tr('Oi20')}`
 
         onClicked: {
-            window.currentProcess.editor.zoom += 0.03
-            if (window.currentProcess.editor.zoom > 2.2)
-                window.currentProcess.editor.zoom = 2.2
-            window.currentProcess.editor.update()
+            globalW.currentProcess.editor.zoom += 0.03
+            if (globalW.currentProcess.editor.zoom > 2.2)
+                globalW.currentProcess.editor.zoom = 2.2
+            globalW.currentProcess.editor.update()
         }
     }
 
@@ -196,13 +193,13 @@ ColumnLayout {
         icn.source: 'qrc:Assets/Images/Icons/zoom-out'
         icn.parent.height: width
         icn.parent.anchors.margins: 6
-        hint.text: translator.global.tr('Oi21')
+        hint.text: `${globalW.globalTranslator.tr('Oi21')}`
 
         onClicked: {
-            window.currentProcess.editor.zoom -= 0.03
-            if (window.currentProcess.editor.zoom < 0.03)
-                window.currentProcess.editor.zoom = 0.03
-            window.currentProcess.editor.update()
+            globalW.currentProcess.editor.zoom -= 0.03
+            if (globalW.currentProcess.editor.zoom < 0.03)
+                globalW.currentProcess.editor.zoom = 0.03
+            globalW.currentProcess.editor.update()
         }
     }
 
@@ -214,7 +211,7 @@ ColumnLayout {
         icn.source: 'qrc:Assets/Images/Icons/point'
         icn.parent.height: width
         icn.parent.anchors.margins: 6
-        hint.text: translator.global.tr('Oi22')
+        hint.text: `${globalW.globalTranslator.tr('Oi22')}`
 
         property bool enable: false
 
@@ -223,8 +220,8 @@ ColumnLayout {
                 resetAll(true)
                 enable = true
 
-                if (!window.currentProcess.editor.input.callbacks.includes(callback))
-                    window.currentProcess.editor.input.callbacks.push(callback)
+                if (!globalW.currentProcess.editor.input.callbacks.includes(callback))
+                    globalW.currentProcess.editor.input.callbacks.push(callback)
             }
         }
 
@@ -238,12 +235,12 @@ ColumnLayout {
             if (!toolPoint.enable)
                 return
 
-            if (key === Qt.LeftButton && !active && !window.currentProcess.editor.status['selected'] && !toolSelect.selecting) {
-                const x = (window.currentProcess.editor.input.mouseX - window.currentProcess.editor.pan.x) / window.currentProcess.editor.zoom
-                const y = (window.currentProcess.editor.input.mouseY - window.currentProcess.editor.pan.y) / window.currentProcess.editor.zoom
+            if (key === Qt.LeftButton && !active && !globalW.currentProcess.editor.status['selected'] && !toolSelect.selecting) {
+                const x = (globalW.currentProcess.editor.input.mouseX - globalW.currentProcess.editor.pan.x) / globalW.currentProcess.editor.zoom
+                const y = (globalW.currentProcess.editor.input.mouseY - globalW.currentProcess.editor.pan.y) / globalW.currentProcess.editor.zoom
 
-                window.currentProcess.editor.add_point(x, y)
-                window.currentProcess.editor.update()
+                globalW.currentProcess.editor.add_point(x, y)
+                globalW.currentProcess.editor.update()
             }
 
             return true
@@ -259,7 +256,7 @@ ColumnLayout {
         icn.source: 'qrc:Assets/Images/Icons/line'
         icn.parent.height: width
         icn.parent.anchors.margins: 6
-        hint.text: translator.global.tr('Oi23')
+        hint.text: `${globalW.globalTranslator.tr('Oi23')}`
 
         property bool enable: false
 
@@ -275,10 +272,10 @@ ColumnLayout {
             if (!enable) {
                 delete callback.s
             } else {
-                if (!window.currentProcess.editor.input.callbacks.includes(callback))
-                    window.currentProcess.editor.input.callbacks.push(callback)
+                if (!globalW.currentProcess.editor.input.callbacks.includes(callback))
+                    globalW.currentProcess.editor.input.callbacks.push(callback)
 
-                window.currentProcess.editor.callbacks.push(
+                globalW.currentProcess.editor.callbacks.push(
                     function ruler(ctx, px, py, z) {
                         if (!toolLine.enable)
                             return
@@ -286,8 +283,8 @@ ColumnLayout {
                         if (!callback.s)
                             return true
 
-                        const x = (window.currentProcess.editor.input.mouseX - px) / z
-                        const y = (window.currentProcess.editor.input.mouseY - py) / z
+                        const x = (globalW.currentProcess.editor.input.mouseX - px) / z
+                        const y = (globalW.currentProcess.editor.input.mouseY - py) / z
 
                         ctx.lineWidth   = 3
                         ctx.strokeStyle = "#37AD76"
@@ -307,19 +304,19 @@ ColumnLayout {
                 return
 
             if (key === Qt.LeftButton && active) {
-                let hovered = window.currentProcess.editor.input.hoveredPoint
+                let hovered = globalW.currentProcess.editor.input.hoveredPoint
                 if (!hovered) {
-                    const x = (window.currentProcess.editor.input.mouseX - window.currentProcess.editor.pan.x) / window.currentProcess.editor.zoom
-                    const y = (window.currentProcess.editor.input.mouseY - window.currentProcess.editor.pan.y) / window.currentProcess.editor.zoom
+                    const x = (globalW.currentProcess.editor.input.mouseX - globalW.currentProcess.editor.pan.x) / globalW.currentProcess.editor.zoom
+                    const y = (globalW.currentProcess.editor.input.mouseY - globalW.currentProcess.editor.pan.y) / globalW.currentProcess.editor.zoom
 
-                    hovered = window.currentProcess.editor.add_point(x, y)
-                    window.currentProcess.editor.update()
+                    hovered = globalW.currentProcess.editor.add_point(x, y)
+                    globalW.currentProcess.editor.update()
                 }
 
                 if (callback.s) {
                     if (hovered !== callback.s) {
-                        window.currentProcess.editor.add_segment(callback.s, hovered)
-                        window.currentProcess.editor.update()
+                        globalW.currentProcess.editor.add_segment(callback.s, hovered)
+                        globalW.currentProcess.editor.update()
                     }
                 }
                 callback.s = hovered
@@ -337,7 +334,7 @@ ColumnLayout {
         icn.source: 'qrc:Assets/Images/Icons/measure'
         icn.parent.height: width
         icn.parent.anchors.margins: 6
-        hint.text: translator.global.tr('Oi24')
+        hint.text: `${globalW.globalTranslator.tr('Oi24')}`
 
         property bool enable: false
 
@@ -353,8 +350,8 @@ ColumnLayout {
                 callback.alive = false
                 callback.active = false
             } else {
-                if (!window.currentProcess.editor.input.callbacks.includes(callback))
-                    window.currentProcess.editor.input.callbacks.push(callback)
+                if (!globalW.currentProcess.editor.input.callbacks.includes(callback))
+                    globalW.currentProcess.editor.input.callbacks.push(callback)
             }
         }
 
@@ -374,18 +371,18 @@ ColumnLayout {
                     callback.active = true
 
                     callback.s = {
-                        x: (window.currentProcess.editor.input.mouseX - window.currentProcess.editor.pan.x) / window.currentProcess.editor.zoom,
-                        y: (window.currentProcess.editor.input.mouseY - window.currentProcess.editor.pan.y) / window.currentProcess.editor.zoom
+                        x: (globalW.currentProcess.editor.input.mouseX - globalW.currentProcess.editor.pan.x) / globalW.currentProcess.editor.zoom,
+                        y: (globalW.currentProcess.editor.input.mouseY - globalW.currentProcess.editor.pan.y) / globalW.currentProcess.editor.zoom
                     }
 
-                    window.currentProcess.editor.callbacks.push(
+                    globalW.currentProcess.editor.callbacks.push(
                         function ruler(ctx, px, py, z) {
                             if (!callback.active)
                                 return
 
                             callback.e = {
-                                x: (window.currentProcess.editor.input.mouseX - px) / z,
-                                y: (window.currentProcess.editor.input.mouseY - py) / z
+                                x: (globalW.currentProcess.editor.input.mouseX - px) / z,
+                                y: (globalW.currentProcess.editor.input.mouseY - py) / z
                             }
 
                             ctx.lineWidth   = 3
@@ -402,7 +399,7 @@ ColumnLayout {
                     callback.active = false
                     callback.alive = true
 
-                    window.currentProcess.editor.callbacks.push(
+                    globalW.currentProcess.editor.callbacks.push(
                         function distance(ctx, px, py, z) {
                             if (!callback.alive)
                                 return
@@ -418,7 +415,7 @@ ColumnLayout {
                             if (distance.angle === undefined) {
                                 distance.angle   = Math.atan((callback.e.y - callback.s.y) / (callback.e.x - callback.s.x))
                                 distance.value   = Math.sqrt(Math.pow(callback.e.y - callback.s.y, 2) + Math.pow(callback.e.x - callback.s.x, 2))
-                                distance.text    = `${(distance.value / window.currentProcess.config.value('cm_pixels', 'int')).toFixed(2)}CM`
+                                distance.text    = `${(distance.value / globalW.currentProcess.config.value('cm_pixels', 'int')).toFixed(2)}CM`
                                 distance.metrics = ctx.measureText(distance.text)
                                 distance.point   = {
                                     x: (callback.s.x + callback.e.x) / 2 - distance.metrics.width,
@@ -454,19 +451,19 @@ ColumnLayout {
         after:
             function() {
                 for (let i = 0, row = 1; i < addText.value.text.length; i += toolAddText.callback.columns, ++row) {
-                    window.currentProcess.editor.add_text(
-                        (toolAddText.callback.s.x - window.currentProcess.editor.pan.x) / window.currentProcess.editor.zoom,
-                        (toolAddText.callback.s.y - window.currentProcess.editor.pan.y + addText.fontSize * row) / window.currentProcess.editor.zoom,
-                        toolAddText.callback.size.w / window.currentProcess.editor.zoom,
-                        toolAddText.callback.size.h / window.currentProcess.editor.zoom,
+                    globalW.currentProcess.editor.add_text(
+                        (toolAddText.callback.s.x - globalW.currentProcess.editor.pan.x) / globalW.currentProcess.editor.zoom,
+                        (toolAddText.callback.s.y - globalW.currentProcess.editor.pan.y + addText.fontSize * row) / globalW.currentProcess.editor.zoom,
+                        toolAddText.callback.size.w / globalW.currentProcess.editor.zoom,
+                        toolAddText.callback.size.h / globalW.currentProcess.editor.zoom,
                         addText.value.text.substr(i, toolAddText.callback.columns),
                         "Consolas",
-                        addText.fontSize / window.currentProcess.editor.zoom,
+                        addText.fontSize / globalW.currentProcess.editor.zoom,
                         addText.fontBold,
                         addText.fontItalic
                     )
                 }
-                window.currentProcess.editor.update()
+                globalW.currentProcess.editor.update()
                 toolAddText.enable = false
                 addText.close()
             }
@@ -480,7 +477,7 @@ ColumnLayout {
         icn.source: 'qrc:Assets/Images/Icons/text'
         icn.parent.height: width
         icn.parent.anchors.margins: 6
-        hint.text: translator.global.tr('Oi25')
+        hint.text: `${globalW.globalTranslator.tr('Oi25')}`
 
         property bool enable: false
 
@@ -497,8 +494,8 @@ ColumnLayout {
                 callback.alive = false
                 callback.active = false
             } else {
-                if (!window.currentProcess.editor.input.callbacks.includes(callback))
-                    window.currentProcess.editor.input.callbacks.push(callback)
+                if (!globalW.currentProcess.editor.input.callbacks.includes(callback))
+                    globalW.currentProcess.editor.input.callbacks.push(callback)
             }
         }
 
@@ -506,20 +503,20 @@ ColumnLayout {
             if (key === Qt.LeftButton && active) {
                 if (!callback.s) {
                     callback.s = {
-                        x: window.currentProcess.editor.input.mouseX,
-                        y: window.currentProcess.editor.input.mouseY
+                        x: globalW.currentProcess.editor.input.mouseX,
+                        y: globalW.currentProcess.editor.input.mouseY
                     }
 
                     callback.active = true
 
-                    window.currentProcess.editor.callbacks.push(
+                    globalW.currentProcess.editor.callbacks.push(
                         function rect(ctx, px, py, z) {
                             if (!callback.active)
                                 return
 
                             callback.e = {
-                                x: window.currentProcess.editor.input.mouseX,
-                                y: window.currentProcess.editor.input.mouseY
+                                x: globalW.currentProcess.editor.input.mouseX,
+                                y: globalW.currentProcess.editor.input.mouseY
                             }
 
                             callback.size = {
@@ -541,7 +538,6 @@ ColumnLayout {
                     )
                 } else {
                     callback.active = false
-                    console.log("aded")
 
                     const sx = callback.s.x, sy = callback.s.y,
                           ex = callback.e.x, ey = callback.e.y
@@ -555,14 +551,14 @@ ColumnLayout {
                         y: Math.max(sy, ey)
                     }
 
-                    addText.parent = window.currentProcess.editor
+                    addText.parent = globalW.currentProcess.editor
                     addText.x = callback.s.x
                     addText.y = Math.max(callback.s.y, callback.e.y)
                     addText.open()
 
                     callback.alive = true
 
-                    window.currentProcess.editor.callbacks.push(
+                    globalW.currentProcess.editor.callbacks.push(
                         function distance(ctx, px, py, z) {
                             if (!callback.alive)
                                 return
@@ -589,7 +585,6 @@ ColumnLayout {
                     )
                 }
             }
-            console.log("returne", toolAddText.enable)
 
             return toolAddText.enable
         }

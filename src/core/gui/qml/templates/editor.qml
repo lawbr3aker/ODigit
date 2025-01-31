@@ -12,6 +12,12 @@ Scripts.Editor {
 
     property var status: {}
 
+    Scripts.Config {
+        id: configThemes
+
+        group: 'config-themes'
+    }
+
     Component.onCompleted: {
         zoom = 1
         status = {}
@@ -21,7 +27,7 @@ Scripts.Editor {
         z: -1
         anchors.fill: parent
 
-        color: 'white'
+        color: configThemes.value('colors/QHa2')
     }
 
     Canvas {

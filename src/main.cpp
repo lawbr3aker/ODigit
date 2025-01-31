@@ -18,7 +18,6 @@
 
 #include "core/gui/scripts/process.hpp"
 #include "core/gui/scripts/config.hpp"
-#include "core/gui/scripts/translator.hpp"
 #include "core/gui/scripts/registration.hpp"
 
 #include "core/utils/hash.hpp"
@@ -50,7 +49,6 @@ int main(int argc, char *argv[]) {
   //
   qmlRegisterType<core::gui::scripts::process>     ("scripts", 1, 0, "Process");
   qmlRegisterType<core::gui::scripts::config>      ("scripts", 1, 0, "Config");
-  qmlRegisterType<core::gui::scripts::translator>  ("scripts", 1, 0, "Translator");
   qmlRegisterType<core::gui::scripts::registration>("scripts", 1, 0, "Registration");
 
   qRegisterMetaType<core::gui::components::editor_elements::segment *>("core::gui::components::editor_elements::segment *");
@@ -60,30 +58,11 @@ int main(int argc, char *argv[]) {
   //
   QSurfaceFormat::setDefaultFormat(format);
 
-  // read default config file content
-  _p(config_default, QFile)(":/Assets/Statics/config");
-     config_default.open(QFile::ReadOnly);
-  // get config file path
-  _p(app_data_path, QDir)(QStandardPaths::standardLocations(QStandardPaths::AppDataLocation).first());
-     app_data_path.cdUp();
+  auto config = new core::gui::scripts::config();
+  config->load(core::gui::scripts::config::getStandardPath(17) + "/../Optitex Pattern Design/ODigit/config.json", ":/Assets/Statics/config");
+  config->setGroup("config-main");
 
-  QFileInfo config_path(app_data_path.path() + "/Optitex Pattern Design/ODigit/config.json");
-
-  if (not config_path.exists())
-    app_data_path.mkpath("Optitex Pattern Design/ODigit");
-  // create global config
-  _p(config_global, core::gui::scripts::config);
-     config_global.load(config_path.filePath(), config_default.readAll());
-  //
-  core::gui::scripts::config::global = &config_global;
-
-  auto language = config_global.value("interface/language").value<QString>();
-
-  _p(translator_global, core::gui::scripts::translator);
-     translator_global.load(":/Translations/" + language);
-  //
-  core::gui::scripts::translator::global = &translator_global;
-
+  const auto language = config->value("interface/language").toString();
   if (language == "fa") {
     QApplication::setFont({
       QFontDatabase::applicationFontFamilies(
@@ -107,7 +86,7 @@ int main(int argc, char *argv[]) {
 
   QObject::connect(
     &engine, &QQmlApplicationEngine::objectCreated, &app,
-    [url](QObject *obj, const QUrl &objUrl) {
+    [url, &app](QObject *obj, const QUrl &objUrl) {
       if (!obj && url == objUrl)
         QCoreApplication::exit(-1);
       },

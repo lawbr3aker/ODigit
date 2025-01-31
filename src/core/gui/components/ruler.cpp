@@ -29,6 +29,11 @@ void
       font.setPixelSize((int) (h / 2.3));
     painter->setFont(font);
 
+    QPen pen{painter->pen()};
+    pen.setColor(color);
+
+    painter->setPen(pen);
+
     do {
       for (int i = 0; i < 10; ++i) {
         int x, y;

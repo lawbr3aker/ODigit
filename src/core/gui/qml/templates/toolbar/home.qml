@@ -11,20 +11,20 @@ import scripts 1.0
 RowLayout {
     id: root
 
-    property var window
-
-    Translator {
-        id: translator
-    }
+    property var globalW
 
     Dialogs.About {
         id: about
+
+        globalW: root.globalW
 
         modality: Qt.ApplicationModal
     }
 
     Dialogs.Settings {
         id: settings
+
+        globalW: root.globalW
 
         modality: Qt.ApplicationModal
     }
@@ -41,31 +41,33 @@ RowLayout {
                 Layout.    fillHeight: true
                 Layout.preferredWidth: 75
 
-                title. text: translator.global.tr('M9sY')
+                font.family: ":/Assets/Fonts/Default-EN"
+
+                title.text: `${globalW.globalTranslator.tr('M9sY')}`
                 icn.source: 'qrc:Assets/Images/Icons/open-file'
                 icn.parent.height: 40
 
                 onClicked: {
-                    window.currentProcess.step_path()
-                    window.currentProcess.step_detect()
-                    for (const point of window.currentProcess.editor.input.activePoints)
+                    globalW.currentProcess.step_path()
+                    globalW.currentProcess.step_detect()
+                    for (const point of globalW.currentProcess.editor.input.activePoints)
                         point.status = 'default'
-                    window.currentProcess.editor.input.activePoints = []
-                    for (const segment of window.currentProcess.editor.input.activeSegments)
+                    globalW.currentProcess.editor.input.activePoints = []
+                    for (const segment of globalW.currentProcess.editor.input.activeSegments)
                         segment.status = 'default'
-                    window.currentProcess.editor.input.activeSegments = []
-                    window.currentProcess.editor.update()
+                    globalW.currentProcess.editor.input.activeSegments = []
+                    globalW.currentProcess.editor.update()
                 }
             }
 
-            Components_Controls.Button {
-                Layout.    fillHeight: true
-                Layout.preferredWidth: 55
-
-                title. text: translator.global.tr('N2cU')
-                icn.source: 'qrc:Assets/Images/Icons/save-file'
-                icn.parent.height: 40
-            }
+            //Components_Controls.Button {
+            //    Layout.    fillHeight: true
+            //    Layout.preferredWidth: 55
+//
+            //    title. text: `${globalW.globalTranslator.tr('N2cU')}`
+            //    icn.source: 'qrc:Assets/Images/Icons/save-file'
+            //    icn.parent.height: 40
+            //}
         }
 
         Text {
@@ -73,7 +75,8 @@ RowLayout {
             Layout.preferredWidth: parent.width
             Layout. minimumHeight: 23
 
-                           text: translator.global.tr('S8zG')
+                          color: globalW.globalThemes.value('colors/GFeV')
+                           text: `${globalW.globalTranslator.tr('S8zG')}`
             horizontalAlignment: Text.AlignHCenter
               verticalAlignment: Text.AlignVCenter
         }
@@ -85,7 +88,7 @@ RowLayout {
         Layout.    leftMargin: 5
         Layout.   rightMargin: 5
 
-        color: '#AAA'
+        color: globalW.globalThemes.value('colors/iIyV')
     }
 
     ColumnLayout {
@@ -102,19 +105,19 @@ RowLayout {
                 Layout.    fillHeight: true
                 Layout.preferredWidth: 75
 
-                title. text: translator.global.tr('H6eV')
+                title. text: `${globalW.globalTranslator.tr('H6eV')}`
                 icn.source: 'qrc:Assets/Images/Icons/render'
                 icn.parent.height: 40
 
                 onClicked: {
-                    window.currentProcess.step_process()
-                    for (const point of window.currentProcess.editor.input.activePoints)
+                    globalW.currentProcess.step_process()
+                    for (const point of globalW.currentProcess.editor.input.activePoints)
                         point.status = 'default'
-                    window.currentProcess.editor.input.activePoints = []
-                    for (const segment of window.currentProcess.editor.input.activeSegments)
+                    globalW.currentProcess.editor.input.activePoints = []
+                    for (const segment of globalW.currentProcess.editor.input.activeSegments)
                         segment.status = 'default'
-                    window.currentProcess.editor.input.activeSegments = []
-                    window.currentProcess.editor.update()
+                    globalW.currentProcess.editor.input.activeSegments = []
+                    globalW.currentProcess.editor.update()
                 }
             }
 
@@ -122,15 +125,15 @@ RowLayout {
                 id: simplifyDialog
 
                 onVisibleChanged: {
-                    parent = window.currentProcess
+                    parent = globalW.currentProcess
                     x = 40
                     y = 40
                 }
 
                 after:
                     function() {
-                        window.currentProcess.editor.simplify(parseFloat(simplifyDialog.a.text), parseFloat(simplifyDialog.b.text), simplifyDialog.c.value)
-                        window.currentProcess.editor.update()
+                        globalW.currentProcess.editor.simplify(parseFloat(simplifyDialog.a.text), parseFloat(simplifyDialog.b.text), simplifyDialog.c.value)
+                        globalW.currentProcess.editor.update()
                         simplifyDialog.close()
                     }
             }
@@ -141,14 +144,14 @@ RowLayout {
                 Layout.    fillHeight: true
                 Layout.preferredWidth: 75
 
-                title. text: translator.global.tr('DSe1')
+                title. text: `${globalW.globalTranslator.tr('DSe1')}`
                 icn.source: 'qrc:Assets/Images/Icons/compress'
                 icn.parent.height: 40
 
                 onClicked: {
-                    simplifyDialog.a.text  = window.currentProcess.config.value('scanner/simplify/default_threshold_a')
-                    simplifyDialog.b.text  = window.currentProcess.config.value('scanner/simplify/default_threshold_b')
-                    simplifyDialog.c.value = window.currentProcess.config.value('scanner/simplify/default_iterations')
+                    simplifyDialog.a.text  = globalW.currentProcess.config.value('scanner/simplify/default_threshold_a')
+                    simplifyDialog.b.text  = globalW.currentProcess.config.value('scanner/simplify/default_threshold_b')
+                    simplifyDialog.c.value = globalW.currentProcess.config.value('scanner/simplify/default_iterations')
                     simplifyDialog.open()
                 }
             }
@@ -159,12 +162,12 @@ RowLayout {
                 Layout.    fillHeight: true
                 Layout.preferredWidth: 65
 
-                title. text: translator.global.tr('D5hY')
+                title. text: `${globalW.globalTranslator.tr('D5hY')}`
                 icn.source: 'qrc:Assets/Images/Icons/dxf'
                 icn.parent.height: 40
 
                 onClicked: {
-                    window.currentProcess.step_export_dxf()
+                    globalW.currentProcess.step_export_dxf()
                 }
             }
         }
@@ -174,7 +177,8 @@ RowLayout {
             Layout.preferredWidth: parent.width
             Layout. minimumHeight: 23
 
-                           text: translator.global.tr('G4jA')
+                          color: globalW.globalThemes.value('colors/GFeV')
+                           text: `${globalW.globalTranslator.tr('G4jA')}`
             horizontalAlignment: Text.AlignHCenter
               verticalAlignment: Text.AlignVCenter
         }
@@ -186,7 +190,7 @@ RowLayout {
         Layout.    leftMargin: 5
         Layout.   rightMargin: 5
 
-        color: '#AAA'
+        color: globalW.globalThemes.value('colors/iIyV')
     }
 
     ColumnLayout {
@@ -201,7 +205,7 @@ RowLayout {
                 Layout.    fillHeight: true
                 Layout.preferredWidth: 65
 
-                title. text: translator.global.tr('Q8kB')
+                title. text: `${globalW.globalTranslator.tr('Q8kB')}`
                 icn.source: 'qrc:Assets/Images/Icons/setting'
                 icn.parent.height: 40
 
@@ -214,7 +218,7 @@ RowLayout {
                 Layout.    fillHeight: true
                 Layout.preferredWidth: 55
 
-                 title.text: translator.global.tr('T2lC')
+                 title.text: `${globalW.globalTranslator.tr('T2lC')}`
                 icn.source: 'qrc:Assets/Images/Icons/about'
                 icn.parent.height: 40
 
@@ -229,7 +233,8 @@ RowLayout {
             Layout.preferredWidth: parent.width
             Layout. minimumHeight: 23
 
-                           text: translator.global.tr('IhyC')
+                          color: globalW.globalThemes.value('colors/GFeV')
+                           text: `${globalW.globalTranslator.tr('IhyC')}`
             horizontalAlignment: Text.AlignHCenter
               verticalAlignment: Text.AlignVCenter
         }

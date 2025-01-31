@@ -14,6 +14,8 @@ namespace core::gui::components {
     Q_PROPERTY(int unit_pixels MEMBER unit_pixels)
     Q_PROPERTY(int offset      MEMBER offset)
 
+    Q_PROPERTY(QColor color    MEMBER color)
+
    public:
     void
       paint(
@@ -24,6 +26,7 @@ namespace core::gui::components {
     _p(orientation, int);
     _p(unit_pixels, float);
     _p(offset     , int) = 0;
+    _p(color      , QColor);
   };
 }
 

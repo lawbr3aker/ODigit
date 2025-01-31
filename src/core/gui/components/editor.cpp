@@ -581,7 +581,6 @@ void
     }
 
     for (auto const& text: _texts) {
-      qDebug() << text->x * rx << text->y * ry << text->w * std::abs(rx) << text->h *std::abs(ry) << text->size * std::abs(ry);
       dxf.writeText(
         *writer,
         DL_TextData(

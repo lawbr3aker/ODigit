@@ -39,8 +39,6 @@ set(PROJECT_SOURCES
     src/core/gui/scripts/config.cpp
     src/core/gui/scripts/process.hpp
     src/core/gui/scripts/process.cpp
-    src/core/gui/scripts/translator.hpp
-    src/core/gui/scripts/translator.cpp
     src/core/gui/scripts/registration.cpp
     src/core/gui/scripts/registration.hpp
 

@@ -3,6 +3,8 @@ import QtQuick.Controls 1.2 as ControlsV1
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
+import scripts 1.0
+
 Button {
   id: root
 
@@ -11,6 +13,12 @@ Button {
   readonly property alias icn: icon
   readonly property alias title: title
   readonly property alias hint : hint
+
+  Config {
+    id: configThemes
+
+    group: 'config-themes'
+  }
 
   background: Rectangle {
     id: background
@@ -21,14 +29,14 @@ Button {
     radius: 3
 
     border {
-      color: bd ? bd : "#ababab"
+      color: bd ? bd : (configThemes.value('colors/0LOj'))
       width: 1
     }
 
-    color: bg ? bg : (root.hovered ? "#c4c4c4" : "#efefef")
+    color: bg ? bg : (root.hovered ? configThemes.value('colors/HVvi') : configThemes.value('colors/5v8I'))
 
     gradient: Gradient {
-      GradientStop { position: 0.0; color: Qt.lighter(background.color, 1.2) }
+      GradientStop { position: 0.0; color: Qt.lighter(background.color, configThemes.value('colors/UBRD')) }
       GradientStop { position: 1.0; color: background.color }
     }
   }
@@ -69,6 +77,8 @@ Button {
 
     Text {
       id: title
+
+      color: configThemes.value('colors/GFeV')
 
       Layout.preferredWidth: parent.width
       Layout.  bottomMargin: 4

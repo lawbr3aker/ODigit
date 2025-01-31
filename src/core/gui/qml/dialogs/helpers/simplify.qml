@@ -44,7 +44,7 @@ Popup {
                 Layout.fillWidth: false
                 Layout.alignment: Qt.AlignRight
 
-                         title.text: translator.global.tr('I29X')
+                         title.text: `${window.globalTranslator.tr('I29X')}`
                 input.implicitWidth: 70
             }
         }
@@ -58,7 +58,7 @@ Popup {
                 Layout.alignment: Qt.AlignRight
                 Layout.fillWidth: false
 
-                         title.text: translator.global.tr('Ow19')
+                         title.text: `${window.globalTranslator.tr('Ow19')}`
                 input.implicitWidth: 70
             }
         }
@@ -72,7 +72,7 @@ Popup {
                 Layout.alignment: Qt.AlignRight
                 Layout.fillWidth: false
 
-                         title.text: translator.global.tr('O9JD')
+                         title.text: `${window.globalTranslator.tr('O9JD')}`
                 input.implicitWidth: 70
             }
         }

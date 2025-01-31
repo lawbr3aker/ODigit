@@ -17,6 +17,12 @@ Scripts.Process {
 
     property Scripts.Editor editor
 
+    Scripts.Config {
+        id: configThemes
+
+        group: 'config-themes'
+    }
+
     GridLayout {
         parent: root
         anchors.fill: parent
@@ -37,6 +43,8 @@ Scripts.Process {
 
                  offset: editor.pan.y
             orientation: Qt.Vertical
+
+            color: configThemes.value('colors/GFeV')
         }
 
         Scripts.Ruler {
@@ -49,6 +57,8 @@ Scripts.Process {
 
                  offset: editor.pan.x
             orientation: Qt.Horizontal
+
+            color: configThemes.value('colors/GFeV')
         }
 
         Timer {
@@ -83,7 +93,6 @@ Scripts.Process {
 
             onZoomChanged: {
                 const pixels = root.config.value('cm_pixels', 'int')
-                console.log(pixels, zoom, zoom * pixels)
 
                 rulerV.unit_pixels = zoom * pixels
                 rulerH.unit_pixels = zoom * pixels

@@ -12,6 +12,8 @@ import scripts 1.0
 ControlsV1.ApplicationWindow {
     id: window
 
+    required property var globalW
+
     title: "Registering application"
 
     minimumWidth: content.width
@@ -212,6 +214,6 @@ ControlsV1.ApplicationWindow {
     }
 
     Component.onCompleted: {
-        direction = config.global.value('interface/appearance/direction') == 'rtl' ? Qt.RightToLeft : Qt.LeftToRight
+        direction = globalW.globalConfig.value('interface/appearance/direction') == 'rtl' ? Qt.RightToLeft : Qt.LeftToRight
     }
 }

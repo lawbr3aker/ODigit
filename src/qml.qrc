@@ -33,6 +33,10 @@
         <file alias="fa">resources/translations/tr_fa.json</file>
         <file alias="en">resources/translations/tr_en.json</file>
     </qresource>
+    <qresource prefix="/Assets/Themes">
+        <file alias="light">resources/themes/light.json</file>
+        <file alias="dark">resources/themes/dark.json</file>
+    </qresource>
     <qresource prefix="/Assets/Statics">
         <file alias="config">resources/statics/config.json</file>
     </qresource>

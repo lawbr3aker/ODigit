@@ -5,6 +5,8 @@
   "interface": {
     "language": "en",
     "appearance": {
+      "font"     : "Default-EN",
+      "theme"    : "dark",
       "direction": "ltr",
       "style"    : "fusion"
     }
