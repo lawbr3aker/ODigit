@@ -1,3 +1,6 @@
+deps/_/*
+build/*
+releases/*
 # Temp
 thirdparty/*
 
@@ -78,6 +81,7 @@ build*/*
 deps/*
 
 # JetBrains
+.idea
 cmake-build-*
 
 # Etc

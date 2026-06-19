@@ -52,6 +52,11 @@ void
 void
   core::utils::algebra::linear_regression::calculate(
   ) {
+    if (n < 2) {
+        slope  = 0;
+        offset = (n == 1 ? sum_y : 0);
+        return;
+    }
     slope  = (n * sum_xy - sum_x * sum_y) / (n * sum_xx - sum_x * sum_x);
     offset = (sum_y - slope * sum_x) / n;
   }

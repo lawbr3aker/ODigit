@@ -112,7 +112,8 @@ void
 core::gui::components::editor_elements::point *
   core::gui::components::editor::add_point(
     _p(x, double),
-    _p(y, double)
+    _p(y, double),
+    _p(segment, core::gui::components::editor_elements::segment *)
   ) {
     auto element = new gui::components
       ::editor_elements::point(
@@ -121,6 +122,11 @@ core::gui::components::editor_elements::point *
 
     QQmlEngine::setObjectOwnership(element, QQmlEngine::CppOwnership);
     _points.push_back(element);
+
+    if (segment) {
+      add_segment(segment->s, element);
+      segment->s = element;
+    }
 
     return element;
   }
@@ -448,7 +454,7 @@ void
             color.setRgb(55, 173, 118);
             break;
           case gui::components::editor_elements::element::statuses::ACTIVE:
-            color.setRgb(73, 33, 35);
+            color.setRgb(219, 0, 0);
             break;
           case gui::components::editor_elements::element::statuses::HOVER:
             color.setRgb(7, 56, 92);
@@ -474,7 +480,7 @@ void
           color.setRgb(16, 138, 227);
           break;
         case gui::components::editor_elements::element::statuses::ACTIVE:
-          color.setRgb(73, 33, 35);
+          color.setRgb(219, 0, 0);
           break;
         case gui::components::editor_elements::element::statuses::HOVER:
           color.setRgb(7, 56, 92);

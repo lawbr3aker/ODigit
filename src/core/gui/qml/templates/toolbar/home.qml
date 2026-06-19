@@ -124,6 +124,8 @@ RowLayout {
             Components_Dialogs_Helpers.ContoursSimplify {
                 id: simplifyDialog
 
+                globalW: root.globalW
+
                 onVisibleChanged: {
                     parent = globalW.currentProcess
                     x = 40

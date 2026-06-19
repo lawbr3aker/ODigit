@@ -81,6 +81,7 @@ Button {
       color: configThemes.value('colors/GFeV')
 
       Layout.preferredWidth: parent.width
+      Layout.maximumHeight: parent.height
       Layout.  bottomMargin: 4
                 leftPadding: 5
                rightPadding: leftPadding
@@ -90,9 +91,8 @@ Button {
         verticalAlignment: Text.AlignBottom
 
       Component.onCompleted: {
-        if (title.text == '') {
+        if (title.text == '')
             Layout.maximumHeight = 0
-        }
         if (icon.implicitHeight === 0) {
             Layout.bottomMargin = 0
             verticalAlignment = Text.AlignVCenter

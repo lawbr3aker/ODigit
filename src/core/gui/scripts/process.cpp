@@ -224,6 +224,7 @@ void
     cv::cvtColor(image, image, cv::COLOR_RGB2GRAY);
     
     auto ths = _(image);
+    cv::threshold(image, image, std::get<0>(ths), 255, cv::THRESH_BINARY);
     
     cv::threshold(image, image, 0, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);
 

@@ -9,13 +9,13 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_CXX_FLAGS -O3)
 
 include_directories(deps/include)
 
-set(Qt5_DIR "F:\\Qt\\5.15.2\\mingw81_64\\lib\\cmake\\Qt5")
+set(Qt5_DIR "D:\\Qt\\Tools\\mingw81_64\\lib\\cmake\\Qt5")
 find_package(Qt5 COMPONENTS Core Quick Widgets REQUIRED)
 
 set(PROJECT_SOURCES
@@ -41,6 +41,8 @@ set(PROJECT_SOURCES
     src/core/gui/scripts/process.cpp
     src/core/gui/scripts/registration.cpp
     src/core/gui/scripts/registration.hpp
+    src/core/gui/scripts/clipboard.cpp
+    src/core/gui/scripts/clipboard.hpp
 
     src/core/gui/components/editor.hpp
     src/core/gui/components/editor.cpp

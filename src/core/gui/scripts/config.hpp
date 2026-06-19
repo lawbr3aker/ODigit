@@ -3,8 +3,10 @@
 #include <QFile>
 #include <QMap>
 #include <QObject>
+#include <QDir>
 #include <QQuickItem>
 #include <QQmlProperty>
+#include <QMessageBox>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QStandardPaths>

@@ -4,6 +4,7 @@
 #include <QFont>
 #include <QFontDatabase>
 #include <QSplashScreen>
+#include <QThread>
 #include <QQmlApplicationEngine>
 #include <QIcon>
 #include <QStyleFactory>
@@ -19,9 +20,9 @@
 #include "core/gui/scripts/process.hpp"
 #include "core/gui/scripts/config.hpp"
 #include "core/gui/scripts/registration.hpp"
+#include "core/gui/scripts/clipboard.hpp"
 
 #include "core/utils/hash.hpp"
-
 
 #ifdef NDEBUG
 #define SPLASH
@@ -32,7 +33,7 @@ int main(int argc, char *argv[]) {
 
 #ifdef SPLASH
   _p(image, QPixmap)(":/Assets/Images/banner");
-     image = image.scaledToWidth(850);
+     image = image.scaledToWidth(850, Qt::TransformationMode::SmoothTransformation);
   //
   _p(splash, QSplashScreen)(image);
      splash.show();
@@ -50,6 +51,15 @@ int main(int argc, char *argv[]) {
   qmlRegisterType<core::gui::scripts::process>     ("scripts", 1, 0, "Process");
   qmlRegisterType<core::gui::scripts::config>      ("scripts", 1, 0, "Config");
   qmlRegisterType<core::gui::scripts::registration>("scripts", 1, 0, "Registration");
+//  qmlRegisterType<core::gui::scripts::clipboard>   ("scripts", 1, 0, "Clipboard");
+  qmlRegisterSingletonType<core::gui::scripts::clipboard>("scripts", 1, 0, "Clipboard",
+                                                       [](QQmlEngine *engine, QJSEngine *scriptEngine) -> QObject * {
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
+
+    auto example = new core::gui::scripts::clipboard();
+    return example;
+  });
 
   qRegisterMetaType<core::gui::components::editor_elements::segment *>("core::gui::components::editor_elements::segment *");
 
@@ -61,6 +71,8 @@ int main(int argc, char *argv[]) {
   auto config = new core::gui::scripts::config();
   config->load(core::gui::scripts::config::getStandardPath(17) + "/../Optitex Pattern Design/ODigit/config.json", ":/Assets/Statics/config");
   config->setGroup("config-main");
+
+  core::gui::scripts::clipboard::setClipboard(QGuiApplication::clipboard());
 
   const auto language = config->value("interface/language").toString();
   if (language == "fa") {
@@ -94,7 +106,7 @@ int main(int argc, char *argv[]) {
   );
 
 #ifdef SPLASH
-  Sleep(1000);
+  QThread::msleep(1000);
   engine.load(url);
   splash.hide();
 #else

@@ -1,5 +1,5 @@
 #define MyAppName "ODigit"
-#define MyAppVersion "25.1"
+#define MyAppVersion "26.4"
 #define MyAppPublisher "Optitex Pattern Design"
 #define MyAppExeName "ODigit.exe"
 #define MyAppAssocName MyAppName + ""
@@ -11,17 +11,20 @@ AppId={{B9463A91-0A6F-46E8-A0FC-BE94BB64AE64}
 AppName={#MyAppName} {#MyAppVersion}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
-DefaultDirName={autopf}/{#MyAppName}
+DefaultGroupName={#MyAppName}
+DefaultDirName={localappdata}/Programs/{#MyAppName}
 ChangesAssociations=yes
 DisableProgramGroupPage=yes
+VersionInfoVersion=26.4.0
 UninstallDisplayIcon={app}/{#MyAppExeName}
+UninstallDisplayName={#MyAppName} {#MyAppVersion}
 ;
 PrivilegesRequired=lowest
 OutputDir=E:/Qt/ODigit/releases
 OutputBaseFilename=ODigit-Installer
 SetupIconFile=E:/Qt/ODigit/src/resources/images/icon.ico
-;lzma2/ultra64
 Compression=lzma2/ultra64
+;Compression=none
 
 SolidCompression=yes
 CompressionThreads=25
@@ -89,11 +92,13 @@ Source: "E:/Qt/ODigit/build/platforms/*"; DestDir: "{app}/platforms"; Flags: ign
 ;Root: HKCU; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{#MyAppName} {#MyAppVersion}"; ValueType: string; ValueName: "DisplayIcon"; ValueData: "{app}/{#MyAppExeName}"
 
 [Icons]
-Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}/{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"; Tasks: programsicon
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}/{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"; Tasks: desktopicon
-Name: "{group}\{#MyAppName}"; Filename: "{app}/{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"
-Name: "{group}\Uninstall {#MyAppName}"; Filename: "{app}/{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"
-Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{app}/{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"
+Name: "{group}\{#MyAppName} {#MyAppVersion}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"
+;Name: "{userprograms}\{#MyAppName} {#MyAppVersion}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"; WorkingDir: "{app}"
+Name: "{autoprograms}\{#MyAppName} {#MyAppVersion}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"; Tasks: programsicon
+Name: "{autodesktop}\{#MyAppName} {#MyAppVersion}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"; Tasks: desktopicon
+;Name: "{group}\Uninstall {#MyAppName} {#MyAppVersion}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"
+;Name: "{group}\{cm:UninstallProgram,{#MyAppName} {#MyAppVersion}}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}/{#MyAppName}.ico"
 
 [Run]
 Filename: "{app}/{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "cmd.exe"; Parameters: "/c rd /s /q ""%LOCALAPPDATA%\ODigit\cache\qmlcache/"; Flags: runhidden

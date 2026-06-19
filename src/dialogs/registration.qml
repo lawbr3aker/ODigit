@@ -9,15 +9,15 @@ import "qrc:Components/Dialogs/Message" as Components_Dialogs_Message
 
 import scripts 1.0
 
-ControlsV1.ApplicationWindow {
+ApplicationWindow {
     id: window
 
     required property var globalW
 
     title: "Registering application"
 
-    minimumWidth: content.width
-    minimumHeight: content.height
+    minimumWidth: content.width + 20
+    minimumHeight: content.height + 20
 
     flags: Qt.Dialog
 
@@ -25,12 +25,12 @@ ControlsV1.ApplicationWindow {
 
     property bool succeed: false
 
-    Config {
-        id: config
-    }
+    required property Registration registration
 
-    Registration {
-        id: registration
+    Rectangle {
+        anchors.fill: parent
+
+        color: globalW.globalThemes.value('colors/IlPR')
     }
 
     Components_Dialogs_Message.Info {
@@ -56,8 +56,26 @@ ControlsV1.ApplicationWindow {
     ColumnLayout {
         id: content
 
-        anchors.fill: parent
-        anchors.margins: 10
+        anchors.centerIn: parent
+
+        function onPaste(event, i) {
+            onPaste.t = [k1, k2, k3, k4, k5]
+
+            if ((event.key === Qt.Key_V) && (event.modifiers & Qt.ControlModifier)) {
+                let t = ''
+                for (let c of Clipboard.getText())
+                    if (/\w/.test(c))
+                        t += c
+
+                let p = onPaste.t[i].input.text.length
+                let c = 0
+                for (; i < 5; ++i) {
+                    const e = onPaste.t[i].input
+                    e.text = t.substring(c, c += e.maximumLength - p)
+                    p = 0
+                }
+            }
+        }
 
         RowLayout {
             Layout.fillWidth: false
@@ -65,6 +83,7 @@ ControlsV1.ApplicationWindow {
 
             Text {
                 text: "Registration key:"
+                color: globalW.globalThemes.value('colors/GFeV')
             }
 
             RowLayout {
@@ -82,6 +101,8 @@ ControlsV1.ApplicationWindow {
 
                     input.onLengthChanged:
                         if (input.length == input.maximumLength) k2.input.focus = true
+
+                    onPressed: function (event) { content.onPaste(event, 0) }
                 }
 
                 Text {
@@ -101,6 +122,8 @@ ControlsV1.ApplicationWindow {
 
                     input.onLengthChanged:
                         if (input.length == input.maximumLength) k3.input.focus = true
+
+                    onPressed: function (event) { content.onPaste(event, 1) }
                 }
 
                 Text {
@@ -120,6 +143,8 @@ ControlsV1.ApplicationWindow {
 
                     input.onLengthChanged:
                         if (input.length == input.maximumLength) k4.input.focus = true
+
+                    onPressed: function (event) { content.onPaste(event, 2) }
                 }
 
                 Text {
@@ -139,6 +164,8 @@ ControlsV1.ApplicationWindow {
 
                     input.onLengthChanged:
                         if (input.length == input.maximumLength) k5.input.focus = true
+
+                    onPressed: function (event) { content.onPaste(event, 3) }
                 }
 
                 Text {
@@ -155,6 +182,8 @@ ControlsV1.ApplicationWindow {
                     input.horizontalAlignment: TextInput.AlignHCenter
 
                     //input.text:d "22M0"
+
+                    onPressed: function (event) { content.onPaste(event, 4) }
                 }
             }
         }
@@ -168,6 +197,7 @@ ControlsV1.ApplicationWindow {
 
                     text: "If you don't have any registration license, Submit (<a href='requests.txt'>REQUEST.txt</a>) file to your administration to get one."
                 wrapMode: Text.WordWrap
+                color: globalW.globalThemes.value('colors/GFeV')
                 font.pixelSize: 13
 
                 MouseArea {
@@ -199,9 +229,9 @@ ControlsV1.ApplicationWindow {
                     const key  = k1.input.text + k2.input.text + k3.input.text + k5.input.text
                     const seed = k4.input.text
                     if (registration.check_key(key, seed)) {
-                        config.global.set('license/key' , key)
-                        config.global.set('license/seed', seed)
-                        config.global.save()
+                        globalW.globalConfig.set('license/key' , key)
+                        globalW.globalConfig.set('license/seed', seed)
+                        globalW.globalConfig.save()
                         succeed = true
 
                         successfulMessage.show()

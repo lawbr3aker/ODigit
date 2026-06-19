@@ -86,7 +86,7 @@ ColumnLayout {
 
                                 toolSelect.selecting = callback.size.w > 0 && callback.size.h > 0
 
-                                ctx.strokeStyle = "#FF0000"
+                                ctx.strokeStyle = "#DB00D8"
 
                                 ctx.lineWidth = 2
                                 ctx.beginPath()
@@ -235,11 +235,14 @@ ColumnLayout {
             if (!toolPoint.enable)
                 return
 
-            if (key === Qt.LeftButton && !active && !globalW.currentProcess.editor.status['selected'] && !toolSelect.selecting) {
+            if (key === Qt.LeftButton && !active && !globalW.currentProcess.editor.status['selected'] && !toolSelect.selecting && !globalW.currentProcess.editor.input.hoveredPoint) {
                 const x = (globalW.currentProcess.editor.input.mouseX - globalW.currentProcess.editor.pan.x) / globalW.currentProcess.editor.zoom
                 const y = (globalW.currentProcess.editor.input.mouseY - globalW.currentProcess.editor.pan.y) / globalW.currentProcess.editor.zoom
 
-                globalW.currentProcess.editor.add_point(x, y)
+                if (globalW.currentProcess.editor.input.hoveredSegment)
+                    globalW.currentProcess.editor.add_point(x, y, globalW.currentProcess.editor.input.hoveredSegment)
+                else
+                    globalW.currentProcess.editor.add_point(x, y)
                 globalW.currentProcess.editor.update()
             }
 
@@ -500,6 +503,9 @@ ColumnLayout {
         }
 
         function callback(key, active) {
+            if (!toolAddText.enable)
+                return
+
             if (key === Qt.LeftButton && active) {
                 if (!callback.s) {
                     callback.s = {
@@ -586,7 +592,7 @@ ColumnLayout {
                 }
             }
 
-            return toolAddText.enable
+            return true
         }
     }
 }

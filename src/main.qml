@@ -4,7 +4,7 @@ import QtQuick.Controls 1.3 as ControlsV1
 import QtQuick.Controls 2.15
 import QtQuick.Dialogs 1.3
 import QtQuick.Controls.Styles 1.4
-import Qt.labs.settings 1.0
+import QtQuick.Window 2.12
 import QtQml 2.15
 
 import "qrc:Dialogs" as Dialogs
@@ -19,7 +19,8 @@ ApplicationWindow {
     minimumWidth: 850
     minimumHeight: 650
     visible: true
-    title: "ODigit 25.1"
+    visibility: Window.Maximized
+    title: "ODigit 26.4"
     modality: Qt.ApplicationModal
 
     property int direction
@@ -63,7 +64,7 @@ ApplicationWindow {
 
                 modality: Qt.ApplicationModal
 
-                Registration {
+                registration: Registration {
                     id: registration
                 }
 
@@ -73,11 +74,12 @@ ApplicationWindow {
                 }
 
                 Timer {
-                    id: fps
+                    id: licChecker
 
-                    interval: 1000 * 60 * 3
-                     running: true
+                    interval: 1000 * 5
                       repeat: false
+                      running: true
+                    triggeredOnStart: true
 
                     onTriggered: {
                         const key  = rootConfig.value('license/key')
@@ -105,7 +107,7 @@ ApplicationWindow {
                     style: TabViewStyle {
                         frameOverlap: 1
                         tab: Rectangle {
-                            y: styleData.selected ? 4 : 6
+                            y: styleData.selected ? 2 : 8
                             color: rootThemes.value('colors/uK6i')
                             border.width: 1
                             border.color: rootThemes.value('colors/iIyV')
@@ -113,7 +115,7 @@ ApplicationWindow {
                             implicitWidth: 100
                             height: 33
 
-                            radius: styleData.selected ? 4 : 2
+                            radius: styleData.selected ? 0 : 2
 
                             Text {
                                 id: text
@@ -166,6 +168,7 @@ ApplicationWindow {
                         z: 2
                         Layout.alignment: Qt.AlignTop
                         Layout.fillHeight: true
+                        Layout.topMargin: 1
                         Layout.minimumHeight: 370
                         Layout.maximumWidth: 43
                         Layout.minimumWidth: Layout.maximumWidth
@@ -213,7 +216,7 @@ ApplicationWindow {
                             style: TabViewStyle {
                                 frameOverlap: 1
                                 tab: Rectangle {
-                                    y: styleData.selected ? 4 : 6
+                                    y: styleData.selected ? 1 : 4
 
                                     color: styleData.selected ? rootThemes.value('colors/uK6i') : rootThemes.value('colors/UrkI')
                                     border.width: 1
@@ -221,8 +224,6 @@ ApplicationWindow {
 
                                     implicitWidth: 100
                                     height: styleData.selected ? 33 : 29
-
-                                    radius: styleData.selected ? 4 : 2
 
                                     Text {
                                         id: text

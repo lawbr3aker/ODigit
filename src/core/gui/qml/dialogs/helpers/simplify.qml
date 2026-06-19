@@ -15,23 +15,27 @@ Popup {
     focus: true
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
+    property var globalW
+
     property alias a: a.input
     property alias b: b.input
     property alias c: c.input
 
     property var after
 
-    background: Item {
-        anchors.fill: parent
+    Scripts.Config {
+        id: configThemes
 
-        Rectangle {
-            id: background
-            anchors.fill: parent
-            radius: 5
-            color: '#EDEDED'
-            border.width: 1
-            border.color: '#CACACA'
-        }
+        group: 'config-themes'
+    }
+
+    background: Rectangle {
+        id: background
+        anchors.fill: parent
+        radius: 5
+        border.width: 1
+        border.color: rootThemes.value('colors/iIyV')
+        color: rootThemes.value('colors/IlPR')
     }
 
     ColumnLayout {
@@ -44,7 +48,7 @@ Popup {
                 Layout.fillWidth: false
                 Layout.alignment: Qt.AlignRight
 
-                         title.text: `${window.globalTranslator.tr('I29X')}`
+                         title.text: `${globalW.globalTranslator.tr('I29X')}`
                 input.implicitWidth: 70
             }
         }
@@ -58,7 +62,7 @@ Popup {
                 Layout.alignment: Qt.AlignRight
                 Layout.fillWidth: false
 
-                         title.text: `${window.globalTranslator.tr('Ow19')}`
+                         title.text: `${globalW.globalTranslator.tr('Ow19')}`
                 input.implicitWidth: 70
             }
         }
@@ -72,14 +76,14 @@ Popup {
                 Layout.alignment: Qt.AlignRight
                 Layout.fillWidth: false
 
-                         title.text: `${window.globalTranslator.tr('O9JD')}`
+                         title.text: `${globalW.globalTranslator.tr('O9JD')}`
                 input.implicitWidth: 70
             }
         }
 
         RowLayout {
             Components_Controls.Button {
-                text: '✔'
+                title.text: `${globalW.globalTranslator.tr('Uqb2')}`
 
                 Layout.alignment: Qt.AlignRight
                 Layout.fillWidth: true

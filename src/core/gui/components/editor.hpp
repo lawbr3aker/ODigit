@@ -274,7 +274,8 @@ namespace core::gui::components {
     core::gui::components::editor_elements::point *
       add_point(
         _p(x, double),
-        _p(y, double)
+        _p(y, double),
+        _p(segment, core::gui::components::editor_elements::segment *) = nullptr
       );
 
     Q_INVOKABLE

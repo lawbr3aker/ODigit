@@ -8,13 +8,25 @@ import "qrc:Components/Controls" as Components_Controls
 
 import scripts 1.0
 
-ControlsV1.ApplicationWindow {
+ApplicationWindow {
     id: window
 
-    minimumWidth: content.width
-    minimumHeight: content.height
+    minimumWidth: content.width + 20
+    minimumHeight: content.height + 20
 
     flags: Qt.Dialog
+
+    Config {
+        id: themes
+
+        group: "config-themes"
+    }
+
+    Rectangle {
+        anchors.fill: parent
+
+        color: themes.value('colors/IlPR')
+    }
 
     property var callback
 
@@ -24,8 +36,7 @@ ControlsV1.ApplicationWindow {
     ColumnLayout {
         id: content
 
-        anchors.fill: parent
-        anchors.margins: 10
+        anchors.centerIn: parent
 
         Row {
             Layout.alignment: Qt.AlignHCenter
@@ -37,6 +48,8 @@ ControlsV1.ApplicationWindow {
                 horizontalAlignment: Text.AlignHCenter
 
                 wrapMode: Text.WordWrap
+
+                color: themes.value('colors/GFeV')
             }
         }
 

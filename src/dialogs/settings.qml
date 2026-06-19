@@ -88,7 +88,7 @@ ControlsV1.ApplicationWindow {
                 id: st12
                 frameOverlap: 1
                 tab: Rectangle {
-                    y: styleData.selected ? 4 : 6
+                    y: styleData.selected ? 1 : 4
 
                     color: styleData.selected ? globalW.globalThemes.value('colors/uK6i') : globalW.globalThemes.value('colors/UrkI')
                     border.width: 1
@@ -96,8 +96,6 @@ ControlsV1.ApplicationWindow {
 
                     implicitWidth: 100
                     height: styleData.selected ? 33 : 29
-
-                    radius: styleData.selected ? 4 : 2
 
                     Text {
                         id: text
@@ -273,31 +271,6 @@ ControlsV1.ApplicationWindow {
                                 Layout.topMargin: 10
                                 sourceComponent: sectionHeader
                                 onLoaded: {
-                                    item.title.text = `${globalW.globalTranslator.tr('F8iN')}`
-                                }
-                            }
-
-                            Row {
-                                spacing: 60
-                                Layout.fillWidth: true
-                                layoutDirection: window.direction
-
-                                Components_Controls.Spinbox {
-                                    id: detectorEDSize
-                                    layoutDirection: window.direction
-
-                                    title.text: `${globalW.globalTranslator.tr('BujH')}`
-                                    input.implicitWidth: 50
-
-                                    input.onValueChanged: tabs.inputsChanged()
-                                }
-                            }
-
-                            Loader {
-                                Layout.fillWidth: true
-                                Layout.topMargin: 10
-                                sourceComponent: sectionHeader
-                                onLoaded: {
                                     item.title.text = `${globalW.globalTranslator.tr('A2tL')}`
                                 }
                             }
@@ -400,7 +373,6 @@ ControlsV1.ApplicationWindow {
                 mainPlaneWidth    .input.value = globalW.globalConfig.value('plane_width')
                 mainPlaneHeight   .input.value = globalW.globalConfig.value('plane_height')
                 mainCMPixels      .input.value = globalW.globalConfig.value('cm_pixels')
-                detectorEDSize    .input.value = globalW.globalConfig.value('scanner/fixer/dilate_size')
                 fixerMinArea      .input.value = globalW.globalConfig.value('scanner/fixer/min_area')
                 fixerMaxDistance  .input.value = globalW.globalConfig.value('scanner/fixer/max_gap')
                 fixerEpsilon      .input.value = globalW.globalConfig.value('scanner/fixer/epsilon')
@@ -418,7 +390,6 @@ ControlsV1.ApplicationWindow {
                 globalW.globalConfig.set('plane_width'                             , mainPlaneWidth            .input.value)
                 globalW.globalConfig.set('plane_height'                            , mainPlaneHeight           .input.value)
                 globalW.globalConfig.set('cm_pixels'                               , mainCMPixels              .input.value)
-                globalW.globalConfig.set('scanner/fixer/dilate_size'               , detectorEDSize            .input.value)
                 globalW.globalConfig.set('scanner/fixer/min_area'                  , fixerMinArea              .input.value)
                 globalW.globalConfig.set('scanner/fixer/max_gap'                   , fixerMaxDistance          .input.value)
                 globalW.globalConfig.set('scanner/fixer/epsilon'                   , fixerEpsilon              .input.value)

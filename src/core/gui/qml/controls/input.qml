@@ -6,6 +6,10 @@ import QtQuick.Controls.Styles 1.4
 import scripts 1.0
 
 RowLayout {
+    id: root
+
+    signal pressed(var event)
+
     property alias title: title
     property alias input: input
 
@@ -27,6 +31,11 @@ RowLayout {
         Layout.fillWidth: true
 
         property alias value: input.text
+
+        Keys.onPressed:
+            function (event) {
+                root.pressed(event)
+            }
 
         style: TextFieldStyle {
             textColor: configThemes.value('colors/GFeV')

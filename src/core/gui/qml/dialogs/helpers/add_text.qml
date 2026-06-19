@@ -7,6 +7,8 @@ import QtGraphicalEffects 1.15
 
 import "qrc:Components/Controls" as Components_Controls
 
+import scripts 1.0
+
 Popup {
     id: root
     width: 230
@@ -22,17 +24,19 @@ Popup {
 
     property var after
 
-    background: Item {
-        anchors.fill: parent
+    Config {
+        id: configThemes
 
-        Rectangle {
-            id: background
-            anchors.fill: parent
-            radius: 5
-            color: '#EDEDED'
-            border.width: 1
-            border.color: '#CACACA'
-        }
+        group: 'config-themes'
+    }
+
+    background: Rectangle {
+        id: background
+        anchors.fill: parent
+        radius: 5
+        border.width: 1
+        border.color: rootThemes.value('colors/iIyV')
+        color: rootThemes.value('colors/IlPR')
     }
 
     Item {
@@ -67,9 +71,9 @@ Popup {
 
                 Components_Controls.Button {
                     id: fontBold
-                    text: '𝐁'
+                    title.text: '𝐁'
                     Layout.maximumHeight: fontSize.height
-                    Layout.maximumWidth: 25
+                    Layout.minimumWidth: 35
 
                     onClicked: {
                         checked = !checked
@@ -78,9 +82,9 @@ Popup {
 
                 Components_Controls.Button {
                     id: fontItalic
-                    text: '𝑖'
+                    title.text: '𝑖'
                     Layout.maximumHeight: fontSize.height
-                    Layout.maximumWidth: 25
+                    Layout.maximumWidth: 35
 
                     onClicked: {
                         checked = !checked
@@ -88,7 +92,7 @@ Popup {
                 }
 
                 Components_Controls.Button {
-                    text: '✔'
+                    title.text: '✔'
                     Layout.maximumHeight: fontSize.height
                     Layout.fillWidth: true
                     Layout.leftMargin: 30

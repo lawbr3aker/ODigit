@@ -9,9 +9,9 @@ ControlsV1.ApplicationWindow {
     
     property var globalW
 
-     minimumWidth: 280
+     minimumWidth: 271
      maximumWidth: minimumWidth
-    minimumHeight: description.height + banner.height
+    minimumHeight: mainContainer.implicitHeight
     maximumHeight: minimumHeight
 
     Rectangle {
@@ -20,7 +20,8 @@ ControlsV1.ApplicationWindow {
     }
 
     ColumnLayout {
-        anchors.fill: parent
+        id: mainContainer
+        width: parent.width
         spacing: 0
 
         ColumnLayout {
@@ -28,7 +29,7 @@ ControlsV1.ApplicationWindow {
 
             Layout.      alignment: Qt.AlignHCenter
             Layout.      fillWidth: true
-            Layout.preferredHeight: 210
+            height: 210
 
             Image {
                 Layout.      alignment: Qt.AlignHCenter
@@ -50,24 +51,55 @@ ControlsV1.ApplicationWindow {
             }
         }
 
-        Rectangle {
+        ColumnLayout {
+            id: temp
             Layout. fillWidth: true
-            Layout.fillHeight: true
 
-            color: globalW.globalThemes.value('colors/uK6i')
+            Rectangle {
+                anchors.fill: parent
+                color: globalW.globalThemes.value('colors/uK6i')
+            }
 
             Text {
                 id: description
 
-                           width: parent.width
-                anchors.centerIn: parent
-                         padding: 17
+                Layout.fillWidth: true
+                Layout.margins: 17
 
                          color: globalW.globalThemes.value('colors/GFeV')
-                          text: globalW.globalTranslator.tr('MV2O')
+
                     textFormat: Text.RichText
                       wrapMode: Text.WordWrap
                 font.pixelSize: 14
+                horizontalAlignment: Text.AlignHCenter
+
+                text: globalW.globalTranslator.tr('MV2O')
+            }
+
+            Text {
+                id: license
+
+                Layout.fillWidth: true
+                Layout.margins: 17
+
+                         color: globalW.globalThemes.value('colors/GFeV')
+
+                    textFormat: Text.RichText
+                      wrapMode: Text.WordWrap
+                font.pixelSize: 14
+
+                Component.onCompleted: {
+                    function formatString(template, ...args) {
+                        var i = 0;
+                        return template.replace(/{}/g, function() {
+                            return typeof args[i] !== 'undefined' ? args[i++] : '{}';
+                        });
+                    }
+
+                    //globalW.globalConfig.value('scanner/fixer/min_area')
+
+                    text = formatString(globalW.globalTranslator.tr('I2nu'), "<span style='color: green;'>Activated</span>", "Unlimited")
+                }
             }
         }
     }
