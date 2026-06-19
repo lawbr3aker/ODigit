@@ -78,14 +78,14 @@ Thumbs.db
 build*/*
 
 # Dependencies
-deps/*
+# deps/*
 
 # JetBrains
 .idea
 cmake-build-*
 
 # Etc
-test*/*
+#test*/*
 docker*/*
 .github/*
 
