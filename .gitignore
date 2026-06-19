@@ -7,7 +7,7 @@ thirdparty/*
 
 *~
 *.autosave
-*.a
+#*.a
 *.core
 *.moc
 *.o
@@ -72,7 +72,7 @@ Thumbs.db
 
 # Binaries
 # --------
-*.dll
+#*.dll
 *.exe
 *.user
 build*/*
